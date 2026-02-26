@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SmartPandit Admin Panel
 
-## Getting Started
+Production-ready admin panel and backend for SmartPandit spiritual marketplace.
 
-First, run the development server:
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router) + TypeScript
+- **Database:** MongoDB Atlas (Mongoose)
+- **Storage:** AWS S3 (images, videos)
+- **Auth:** NextAuth.js v5 (Credentials, admin-only)
+- **Payments:** Razorpay
+- **UI:** Tailwind CSS + Shadcn-style components + Recharts
+
+## Quick Start
+
+### 1. Environment
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
+# Edit .env.local with your MongoDB URI, AWS keys, Razorpay keys, etc.
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install & Run
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run seed    # Seed admin user + sample data (requires MONGODB_URI)
+npm run dev     # http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Login
 
-## Learn More
+- **URL:** `/login`
+- **Default admin:** `admin@smartpandit.com` / `Admin@123456` (created by seed; credentials live only in DB)
 
-To learn more about Next.js, take a look at the following resources:
+- **API errors:** Terminal/console pe `[API ERROR]` logs dikhenge jab koi API fail hogi (path, message, stack). See `src/lib/api-logger.ts`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Puja sections:** Admin me puja add/edit karne ke liye saare sections — see `docs/PUJA_SECTIONS.md`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+src/
+├── app/
+│   ├── (auth)/login/          # Login page
+│   ├── admin/                 # Admin dashboard
+│   │   ├── pujas/             # Puja CRUD
+│   │   ├── puja-requests/     # Booking requests
+│   │   ├── products/          # Product catalog
+│   │   ├── astrology/         # Astrology requests
+│   │   ├── pandits/           # Pandit management
+│   │   ├── customers/         # Customer management
+│   │   ├── transactions/     # Payment logs
+│   │   ├── coupons/           # Coupon codes
+│   │   ├── reviews/           # Review moderation
+│   │   ├── blogs/             # Blog CMS
+│   │   ├── banners/           # Banners
+│   │   ├── calendar/          # Festival / Muhurat
+│   │   ├── notifications/     # Bulk notifications
+│   │   ├── audit-logs/        # Activity trail
+│   │   └── settings/          # Site config
+│   └── api/
+│       ├── auth/[...nextauth]/
+│       ├── admin/upload/       # S3 presigned URL
+│       └── webhooks/razorpay/
+├── components/
+│   ├── admin/                 # Admin layout (Sidebar, Header)
+│   └── ui/                    # Reusable UI (Button, Card, Table, etc.)
+├── lib/
+│   ├── db/mongodb.ts          # MongoDB connection
+│   ├── s3/upload.ts           # AWS S3 presigned URL
+│   ├── auth/options.ts        # NextAuth config
+│   └── razorpay/index.ts      # Razorpay SDK
+├── models/                    # Mongoose schemas (16 models)
+├── repositories/              # Data access layer
+├── services/                  # Analytics, Audit
+├── schemas/                   # Zod validation
+├── actions/                   # Server actions
+└── types/
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment Variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Variable | Description |
+|----------|-------------|
+| `MONGODB_URI` | MongoDB Atlas connection string |
+| `AUTH_SECRET` | NextAuth secret (min 32 chars) |
+| `NEXTAUTH_URL` | App URL (e.g. http://localhost:3000) |
+| `AWS_ACCESS_KEY_ID` | AWS S3 access key |
+| `AWS_SECRET_ACCESS_KEY` | AWS S3 secret |
+| `AWS_REGION` | e.g. ap-south-1 |
+| `AWS_S3_BUCKET` | S3 bucket name |
+| `RAZORPAY_KEY_ID` | Razorpay key |
+| `RAZORPAY_KEY_SECRET` | Razorpay secret |
+| `RAZORPAY_WEBHOOK_SECRET` | Optional, for webhook verification |
+
+## Core Modules
+
+1. **Puja Management** — CRUD, 3-tier packages, samagri, SEO, images
+2. **Puja Requests** — Assign pandit, status flow, payment tracking
+3. **Products** — Inventory, variants, spiritual fields, low-stock alerts
+4. **Astrology Requests** — Assign astrologer, session scheduling
+5. **Pandits** — Profile, verification, availability, payout
+6. **Dashboard** — Revenue, bookings, top pujas, pandit performance, low stock
+
+## Scripts
+
+- `npm run dev` — Start dev server
+- `npm run build` — Production build
+- `npm run start` — Start production server
+- `npm run seed` — Seed admin + sample data
+
+## License
+
+Private - SmartPandit

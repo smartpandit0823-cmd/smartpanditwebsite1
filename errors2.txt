@@ -1,0 +1,104 @@
+﻿src/app/admin/banners/page.tsx(18,237): error TS2345: Argument of type '(b: { _id: string; title: string; position: string; order: number; status: string; }) => JSX.Element' is not assignable to parameter of type '(value: IBanner & Required<{ _id: ObjectId; }> & { __v: number; }, index: number, array: (IBanner & Required<{ _id: ObjectId; }> & { ...; })[]) => Element'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'IBanner & Required<{ _id: ObjectId; }> & { __v: number; }' is not assignable to type '{ _id: string; title: string; position: string; order: number; status: string; }'.
+      Types of property '_id' are incompatible.
+        Type 'ObjectId' is not assignable to type 'string'.
+src/app/admin/blogs/page.tsx(18,269): error TS2345: Argument of type '(b: { _id: string; title: string; category: string; author: string; status: string; createdAt: string; }) => JSX.Element' is not assignable to parameter of type '(value: IBlog, index: number, array: IBlog[]) => Element'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'IBlog' is not assignable to type '{ _id: string; title: string; category: string; author: string; status: string; createdAt: string; }'.
+      Types of property '_id' are incompatible.
+        Type 'ObjectId' is not assignable to type 'string'.
+src/app/admin/bookings/[id]/page.tsx(29,45): error TS2352: Conversion of type 'ObjectId' to type '{ name: string; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'name' is missing in type 'ObjectId' but required in type '{ name: string; }'.
+src/app/admin/bookings/[id]/page.tsx(29,92): error TS2352: Conversion of type 'ObjectId' to type '{ phone: string; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'phone' is missing in type 'ObjectId' but required in type '{ phone: string; }'.
+src/app/admin/bookings/[id]/page.tsx(35,40): error TS2352: Conversion of type 'ObjectId' to type '{ phone: string; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'phone' is missing in type 'ObjectId' but required in type '{ phone: string; }'.
+src/app/admin/bookings/[id]/page.tsx(40,39): error TS2352: Conversion of type 'ObjectId' to type '{ name: string; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'name' is missing in type 'ObjectId' but required in type '{ name: string; }'.
+src/app/admin/bookings/[id]/page.tsx(49,57): error TS2352: Conversion of type 'ObjectId | undefined' to type '{ _id: string; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'ObjectId' is not comparable to type '{ _id: string; }'.
+    Types of property '_id' are incompatible.
+      Type 'ObjectId' is not comparable to type 'string'.
+src/app/admin/bookings/[id]/page.tsx(49,151): error TS2322: Type '(IPandit & Required<{ _id: ObjectId; }> & { __v: number; })[]' is not assignable to type '{ _id: string; name: string; phone: string; }[]'.
+  Type 'IPandit & Required<{ _id: ObjectId; }> & { __v: number; }' is not assignable to type '{ _id: string; name: string; phone: string; }'.
+    Types of property '_id' are incompatible.
+      Type 'ObjectId' is not assignable to type 'string'.
+src/app/admin/calendar/page.tsx(17,206): error TS2345: Argument of type '(e: { _id: string; name: string; date: string; type: string; }) => JSX.Element' is not assignable to parameter of type '(value: IFestivalCalendar, index: number, array: IFestivalCalendar[]) => Element'.
+  Types of parameters 'e' and 'value' are incompatible.
+    Type 'IFestivalCalendar' is not assignable to type '{ _id: string; name: string; date: string; type: string; }'.
+      Types of property '_id' are incompatible.
+        Type 'ObjectId' is not assignable to type 'string'.
+src/app/admin/coupons/page.tsx(18,294): error TS2345: Argument of type '(c: { _id: string; code: string; type: string; value: number; usageCount: number; usageLimit: number; expiresAt?: string; status: string; }) => JSX.Element' is not assignable to parameter of type '(value: ICoupon, index: number, array: ICoupon[]) => Element'.
+  Types of parameters 'c' and 'value' are incompatible.
+    Type 'ICoupon' is not assignable to type '{ _id: string; code: string; type: string; value: number; usageCount: number; usageLimit: number; expiresAt?: string | undefined; status: string; }'.
+      Types of property '_id' are incompatible.
+        Type 'ObjectId' is not assignable to type 'string'.
+src/app/admin/customers/page.tsx(16,271): error TS2345: Argument of type '(c: { _id: string; name: string; email: string; phone?: string; status: string; totalSpent: number; }) => JSX.Element' is not assignable to parameter of type '(value: ICustomer, index: number, array: ICustomer[]) => Element'.
+  Types of parameters 'c' and 'value' are incompatible.
+    Type 'ICustomer' is not assignable to type '{ _id: string; name: string; email: string; phone?: string | undefined; status: string; totalSpent: number; }'.
+      Types of property '_id' are incompatible.
+        Type 'ObjectId' is not assignable to type 'string'.
+src/app/admin/offers/page.tsx(19,235): error TS2345: Argument of type '(o: { _id: string; title: string; type: string; discount: number; discountType: string; active: boolean; }) => JSX.Element' is not assignable to parameter of type '(value: IOffer & Required<{ _id: ObjectId; }> & { __v: number; }, index: number, array: (IOffer & Required<{ _id: ObjectId; }> & { ...; })[]) => Element'.
+  Types of parameters 'o' and 'value' are incompatible.
+    Type 'IOffer & Required<{ _id: ObjectId; }> & { __v: number; }' is not assignable to type '{ _id: string; title: string; type: string; discount: number; discountType: string; active: boolean; }'.
+      Types of property '_id' are incompatible.
+        Type 'ObjectId' is not assignable to type 'string'.
+src/app/admin/pandits/page.tsx(17,271): error TS2345: Argument of type '(p: { _id: string; name: string; city: string; status: string; verificationStatus: string; totalPujasCompleted: number; }) => JSX.Element' is not assignable to parameter of type '(value: IPandit, index: number, array: IPandit[]) => Element'.
+  Types of parameters 'p' and 'value' are incompatible.
+    Type 'IPandit' is not assignable to type '{ _id: string; name: string; city: string; status: string; verificationStatus: string; totalPujasCompleted: number; }'.
+      Types of property '_id' are incompatible.
+        Type 'ObjectId' is not assignable to type 'string'.
+src/app/admin/pujas/[id]/page.tsx(18,43): error TS2345: Argument of type '(p: { _id?: unknown; [k: string]: unknown; }) => { _id: string; }' is not assignable to parameter of type '(value: IPujaPackage, index: number, array: IPujaPackage[]) => { _id: string; }'.
+  Types of parameters 'p' and 'value' are incompatible.
+    Type 'IPujaPackage' is not assignable to type '{ [k: string]: unknown; _id?: unknown; }'.
+      Index signature for type 'string' is missing in type 'IPujaPackage'.
+src/app/admin/reviews/page.tsx(33,32): error TS2345: Argument of type '(r: { _id: string; customerName: string; targetModel: string; rating: number; comment: string; status: string; createdAt: string; }) => JSX.Element' is not assignable to parameter of type '(value: IReview, index: number, array: IReview[]) => Element'.
+  Types of parameters 'r' and 'value' are incompatible.
+    Type 'IReview' is not assignable to type '{ _id: string; customerName: string; targetModel: string; rating: number; comment: string; status: string; createdAt: string; }'.
+      Types of property '_id' are incompatible.
+        Type 'ObjectId' is not assignable to type 'string'.
+src/app/admin/sliders/page.tsx(19,206): error TS2345: Argument of type '(s: { _id: string; title: string; order: number; active: boolean; }) => JSX.Element' is not assignable to parameter of type '(value: ISlider & Required<{ _id: ObjectId; }> & { __v: number; }, index: number, array: (ISlider & Required<{ _id: ObjectId; }> & { ...; })[]) => Element'.
+  Types of parameters 's' and 'value' are incompatible.
+    Type 'ISlider & Required<{ _id: ObjectId; }> & { __v: number; }' is not assignable to type '{ _id: string; title: string; order: number; active: boolean; }'.
+      Types of property '_id' are incompatible.
+        Type 'ObjectId' is not assignable to type 'string'.
+src/app/admin/transactions/page.tsx(15,272): error TS2345: Argument of type '(t: { _id: string; razorpayOrderId: string; customerName: string; amount: number; status: string; createdAt: string; }) => JSX.Element' is not assignable to parameter of type '(value: ITransaction, index: number, array: ITransaction[]) => Element'.
+  Types of parameters 't' and 'value' are incompatible.
+    Type 'ITransaction' is not assignable to type '{ _id: string; razorpayOrderId: string; customerName: string; amount: number; status: string; createdAt: string; }'.
+      Types of property '_id' are incompatible.
+        Type 'ObjectId' is not assignable to type 'string'.
+src/app/api/astrology/request/[id]/route.ts(50,24): error TS2352: Conversion of type 'ObjectId | undefined' to type '{ name: string; phone: string; } | null' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'ObjectId' is missing the following properties from type '{ name: string; phone: string; }': name, phone
+src/app/api/astrology/request/[id]/route.ts(66,70): error TS2345: Argument of type '{ name: string; phone: string; } | null' is not assignable to parameter of type '{ name: string; } | undefined'.
+  Type 'null' is not assignable to type '{ name: string; } | undefined'.
+src/app/api/booking/[id]/route.ts(28,18): error TS2352: Conversion of type 'ObjectId' to type '{ name: string; slug: string; images: string[]; category: string; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'ObjectId' is missing the following properties from type '{ name: string; slug: string; images: string[]; category: string; }': name, slug, images, category
+src/app/api/booking/[id]/route.ts(29,20): error TS2352: Conversion of type 'ObjectId | undefined' to type '{ name: string; phone: string; } | null' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'ObjectId' is missing the following properties from type '{ name: string; phone: string; }': name, phone
+src/app/api/my-bookings/route.ts(35,22): error TS2352: Conversion of type 'ObjectId' to type '{ name: string; slug: string; images: string[]; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'ObjectId' is missing the following properties from type '{ name: string; slug: string; images: string[]; }': name, slug, images
+src/app/api/order/create/route.ts(45,17): error TS2352: Conversion of type 'ObjectId' to type '{ _id: ObjectId; name: string; mainImage?: string | undefined; pricing?: { sellingPrice: number; } | undefined; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'name' is missing in type 'ObjectId' but required in type '{ _id: ObjectId; name: string; mainImage?: string | undefined; pricing?: { sellingPrice: number; } | undefined; }'.
+src/app/api/user/bookings/route.ts(53,28): error TS2339: Property 'packageName' does not exist on type 'IBooking & Required<{ _id: ObjectId; }> & { __v: number; }'.
+src/lib/auth/options.ts(56,9): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/repositories/astrology.repository.ts(1,10): error TS2614: Module '"mongoose"' has no exported member 'FilterQuery'. Did you mean to use 'import FilterQuery from "mongoose"' instead?
+src/repositories/audit.repository.ts(1,10): error TS2614: Module '"mongoose"' has no exported member 'FilterQuery'. Did you mean to use 'import FilterQuery from "mongoose"' instead?
+src/repositories/banner.repository.ts(1,10): error TS2614: Module '"mongoose"' has no exported member 'FilterQuery'. Did you mean to use 'import FilterQuery from "mongoose"' instead?
+src/repositories/base.repository.ts(1,20): error TS2614: Module '"mongoose"' has no exported member 'FilterQuery'. Did you mean to use 'import FilterQuery from "mongoose"' instead?
+src/repositories/base.repository.ts(40,7): error TS2322: Type 'Query<(Document<unknown, {}, { _id: ObjectId; }, {}, DefaultSchemaOptions> & { _id: ObjectId; } & Required<{ _id: ObjectId; }> & { ...; } & { ...; })[], ... 4 more ..., {}>' is not assignable to type 'Query<IfAny<T, any, Document<unknown, {}, T, {}, DefaultSchemaOptions> & Require_id<T> & { __v: number; } & AddDefaultId<T, {}, DefaultSchemaOptions>>[], ... 4 more ..., {}>'.
+  The types returned by 'exec()' are incompatible between these types.
+    Type 'Promise<(Document<unknown, {}, { _id: ObjectId; }, {}, DefaultSchemaOptions> & { _id: ObjectId; } & Required<{ _id: ObjectId; }> & { ...; } & { ...; })[]>' is not assignable to type 'Promise<IfAny<T, any, Document<unknown, {}, T, {}, DefaultSchemaOptions> & Require_id<T> & { __v: number; } & AddDefaultId<T, {}, DefaultSchemaOptions>>[]>'.
+      Type '(Document<unknown, {}, { _id: ObjectId; }, {}, DefaultSchemaOptions> & { _id: ObjectId; } & Required<{ _id: ObjectId; }> & { ...; } & { ...; })[]' is not assignable to type 'IfAny<T, any, Document<unknown, {}, T, {}, DefaultSchemaOptions> & Require_id<T> & { __v: number; } & AddDefaultId<T, {}, DefaultSchemaOptions>>[]'.
+        Type 'Document<unknown, {}, { _id: ObjectId; }, {}, DefaultSchemaOptions> & { _id: ObjectId; } & Required<{ _id: ObjectId; }> & { ...; } & { ...; }' is not assignable to type 'IfAny<T, any, Document<unknown, {}, T, {}, DefaultSchemaOptions> & Require_id<T> & { __v: number; } & AddDefaultId<T, {}, DefaultSchemaOptions>>'.
+src/repositories/blog.repository.ts(1,10): error TS2614: Module '"mongoose"' has no exported member 'FilterQuery'. Did you mean to use 'import FilterQuery from "mongoose"' instead?
+src/repositories/coupon.repository.ts(1,10): error TS2614: Module '"mongoose"' has no exported member 'FilterQuery'. Did you mean to use 'import FilterQuery from "mongoose"' instead?
+src/repositories/customer.repository.ts(1,10): error TS2614: Module '"mongoose"' has no exported member 'FilterQuery'. Did you mean to use 'import FilterQuery from "mongoose"' instead?
+src/repositories/festival.repository.ts(1,10): error TS2614: Module '"mongoose"' has no exported member 'FilterQuery'. Did you mean to use 'import FilterQuery from "mongoose"' instead?
+src/repositories/pandit.repository.ts(1,10): error TS2614: Module '"mongoose"' has no exported member 'FilterQuery'. Did you mean to use 'import FilterQuery from "mongoose"' instead?
+src/repositories/product.repository.ts(1,10): error TS2614: Module '"mongoose"' has no exported member 'FilterQuery'. Did you mean to use 'import FilterQuery from "mongoose"' instead?
+src/repositories/puja-request.repository.ts(1,10): error TS2614: Module '"mongoose"' has no exported member 'FilterQuery'. Did you mean to use 'import FilterQuery from "mongoose"' instead?
+src/repositories/puja.repository.ts(1,10): error TS2614: Module '"mongoose"' has no exported member 'FilterQuery'. Did you mean to use 'import FilterQuery from "mongoose"' instead?
+src/repositories/review.repository.ts(1,10): error TS2614: Module '"mongoose"' has no exported member 'FilterQuery'. Did you mean to use 'import FilterQuery from "mongoose"' instead?
+src/repositories/transaction.repository.ts(1,10): error TS2614: Module '"mongoose"' has no exported member 'FilterQuery'. Did you mean to use 'import FilterQuery from "mongoose"' instead?
