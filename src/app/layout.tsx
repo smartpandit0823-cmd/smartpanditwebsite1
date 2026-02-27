@@ -19,36 +19,39 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: "SmartPandit – Book Verified Pandits Online",
-    template: "%s | SmartPandit",
+    default: "SanatanSetu – Premium Spiritual Store",
+    template: "%s | SanatanSetu",
   },
   description:
-    "India's most trusted platform to book verified pandits for puja, astrology consultations, religious products, and temple services. Starting ₹499.",
+    "India's premium spiritual store — Rudraksha, Puja Kits, Gemstones, Temple Prasad, Sacred Jewellery & more. Pandit verified, astrologer recommended. Free shipping ₹499+.",
   keywords: [
-    "book pandit online",
-    "puja booking",
-    "astrology consultation",
-    "pooja samagri",
-    "temple puja",
-    "kumbh mela",
-    "SmartPandit",
+    "spiritual products",
+    "rudraksha online",
+    "puja kit",
+    "gemstones",
+    "temple prasad",
+    "spiritual jewellery",
+    "astrology remedies",
+    "premium puja kits",
+    "SanatanSetu",
   ],
-  authors: [{ name: "SmartPandit" }],
-  creator: "SmartPandit",
-  metadataBase: new URL("https://smartpandit.in"),
+  authors: [{ name: "SanatanSetu" }],
+  creator: "SanatanSetu",
+  metadataBase: new URL("https://sanatansetu.com"),
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://smartpandit.in",
-    siteName: "SmartPandit",
-    title: "SmartPandit – Book Verified Pandits Online",
+    url: "https://sanatansetu.com",
+    siteName: "SanatanSetu",
+    title: "SanatanSetu – Premium Spiritual Store",
     description:
-      "India's most trusted platform to book verified pandits for puja, astrology consultations, religious products, and temple services.",
+      "India's premium spiritual store — authentic products curated by verified pandits & expert astrologers.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "SmartPandit – Book Verified Pandits Online",
-    description: "Book verified pandits for puja, astrology & more. Starting ₹499.",
+    title: "SanatanSetu – Premium Spiritual Store",
+    description:
+      "Shop Rudraksha, Puja Kits, Gemstones & more. Pandit verified. Starting ₹199.",
   },
   robots: {
     index: true,
@@ -58,7 +61,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "SmartPandit",
+    title: "SanatanSetu",
   },
   other: {
     "mobile-web-app-capable": "yes",

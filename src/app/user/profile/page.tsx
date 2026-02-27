@@ -118,7 +118,7 @@ export default function UserProfilePage() {
     return (
         <div className="mx-auto max-w-2xl px-4 py-6 space-y-6">
             {/* Profile Card */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-saffron-500 to-saffron-700 p-5 text-white shadow-xl shadow-saffron-200/40">
+            <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-saffron-500 to-saffron-700 p-5 text-white shadow-xl shadow-saffron-200/40">
                 <div className="absolute -right-6 -top-6 size-24 rounded-full bg-white/10" />
                 <div className="absolute -bottom-4 -left-4 size-16 rounded-full bg-white/5" />
 
@@ -205,16 +205,18 @@ export default function UserProfilePage() {
                 ))}
 
                 {/* Logout */}
-                <button
-                    onClick={handleLogout}
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3.5 text-sm font-medium text-red-600 transition active:scale-[0.98]"
-                >
-                    <LogOut size={16} />
-                    Logout
-                </button>
+                <div className="md:hidden pb-24">
+                    <button
+                        onClick={handleLogout}
+                        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3.5 text-sm font-medium text-red-600 transition active:scale-[0.98]"
+                    >
+                        <LogOut size={16} />
+                        Logout
+                    </button>
+                </div>
             </div>
 
-            <p className="text-center text-xs text-warm-400">SmartPandit v1.0 · Made with 🙏</p>
+            <p className="text-center text-xs text-warm-400 pb-12 md:pb-0">SmartPandit v1.0 · Made with 🙏</p>
         </div>
     );
 }

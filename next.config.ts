@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    dangerouslyAllowSVG: true,
     remotePatterns: [
       { protocol: "https", hostname: "*.amazonaws.com" },
       { protocol: "https", hostname: "*.s3.amazonaws.com" },
@@ -9,6 +10,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "s3.ap-south-1.amazonaws.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "*.unsplash.com" },
+      { protocol: "https", hostname: "placehold.co" },
     ],
     minimumCacheTTL: 3600,
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],

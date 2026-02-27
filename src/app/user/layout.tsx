@@ -17,12 +17,9 @@ import {
 
 const SIDEBAR_LINKS = [
     { label: "My Profile", href: "/user/profile", icon: User },
-    { label: "My Bookings", href: "/user/bookings", icon: CalendarCheck },
     { label: "My Orders", href: "/user/orders", icon: ShoppingBag },
-    { label: "Consultations", href: "/user/consultations", icon: Sparkles },
     { label: "Saved Addresses", href: "/user/addresses", icon: MapPin },
     { label: "Notifications", href: "/user/notifications", icon: Bell },
-    { label: "Favorites", href: "/user/favorites", icon: Heart },
     { label: "Settings", href: "/user/settings", icon: Settings },
 ];
 
@@ -42,7 +39,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
                 {/* ── Desktop Sidebar ── */}
                 <aside className="hidden w-64 shrink-0 md:block">
                     <div className="sticky top-24 overflow-hidden rounded-2xl border border-saffron-200/50 bg-[#fffdf7] shadow-xl shadow-saffron-100">
-                        <div className="p-4 bg-gradient-to-r from-saffron-50 to-orange-50/50 border-b border-saffron-100">
+                        <div className="p-4 bg-linear-to-r from-saffron-50 to-orange-50/50 border-b border-saffron-100">
                             <h2 className="font-heading text-lg font-bold text-warm-900">My Account</h2>
                         </div>
                         <nav className="flex flex-col p-2">
@@ -54,8 +51,8 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
                                         key={link.href}
                                         href={link.href}
                                         className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive
-                                                ? "bg-gradient-to-r from-saffron-500 to-saffron-600 text-white shadow-md shadow-saffron-200/50"
-                                                : "text-warm-700 hover:bg-saffron-50 hover:text-saffron-700"
+                                            ? "bg-linear-to-r from-saffron-500 to-saffron-600 text-white shadow-md shadow-saffron-200/50"
+                                            : "text-warm-700 hover:bg-saffron-50 hover:text-saffron-700"
                                             }`}
                                     >
                                         <Icon size={18} className={isActive ? "text-white" : "text-saffron-500"} />

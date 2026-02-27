@@ -4,11 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Flame,
-  FileText,
   Package,
   ShoppingCart,
-  Star,
   Users,
   UserCog,
   CreditCard,
@@ -18,12 +15,9 @@ import {
   ScrollText,
   Settings,
   Bell,
-  BarChart3,
-  Calendar,
   MessageSquare,
   BookOpen,
   Video,
-  IndianRupee,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,56 +34,34 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    title: "Puja Admin",
-    items: [
-      { href: "/admin/pujas", label: "Pujas", icon: Flame },
-      { href: "/admin/puja-requests", label: "Puja Requests", icon: FileText },
-      { href: "/admin/pandits", label: "Pandits & Astrologers", icon: Users },
-      { href: "/admin/bookings", label: "Generic Bookings", icon: Calendar },
-      { href: "/admin/payouts", label: "Pandit Payouts", icon: IndianRupee },
-    ],
-  },
-  {
-    title: "Store",
+    title: "Store Management",
     items: [
       { href: "/admin/products", label: "Products", icon: Package },
       { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
     ],
   },
   {
-    title: "Astrology",
+    title: "CMS & Marketing",
     items: [
-      { href: "/admin/astrology", label: "Astrology Requests", icon: Star },
-    ],
-  },
-  {
-    title: "Team (Store & Misc)",
-    items: [
-      { href: "/admin/team", label: "Team Members", icon: UserCog },
-    ],
-  },
-  {
-    title: "CMS",
-    items: [
-      { href: "/admin/offers", label: "Offers", icon: Ticket },
-      { href: "/admin/banners", label: "Banners", icon: Image },
-      { href: "/admin/sliders", label: "Sliders", icon: SlidersHorizontal },
+      { href: "/admin/offers", label: "Coupons & Offers", icon: Ticket },
+      { href: "/admin/banners", label: "Shop Banners", icon: Image },
+      { href: "/admin/sliders", label: "Home Sliders", icon: SlidersHorizontal },
       { href: "/admin/blogs", label: "Blogs", icon: BookOpen },
-      { href: "/admin/calendar", label: "Calendar", icon: Calendar },
     ],
   },
   {
-    title: "Analytics & Users",
+    title: "Customers & Insights",
     items: [
       { href: "/admin/users", label: "Users", icon: Users },
-      { href: "/admin/reviews", label: "Reviews", icon: MessageSquare },
+      { href: "/admin/reviews", label: "Product Reviews", icon: MessageSquare },
       { href: "/admin/testimonials", label: "Testimonials", icon: Video },
       { href: "/admin/transactions", label: "Transactions", icon: CreditCard },
     ],
   },
   {
-    title: "System",
+    title: "System & Settings",
     items: [
+      { href: "/admin/team", label: "Admin Team", icon: UserCog },
       { href: "/admin/notifications", label: "Notifications", icon: Bell },
       { href: "/admin/audit-logs", label: "Audit Logs", icon: ScrollText },
       { href: "/admin/settings", label: "Settings", icon: Settings },
@@ -111,7 +83,7 @@ export function AdminSidebar() {
           <span className="gradient-saffron flex h-8 w-8 items-center justify-center rounded-lg text-white text-sm">
             ॐ
           </span>
-          SmartPandit
+          SmartPandit Store
         </Link>
       </div>
 
@@ -151,7 +123,7 @@ export function AdminSidebar() {
 
       {/* Footer */}
       <div className="shrink-0 border-t border-gold-200 p-4">
-        <p className="text-center text-xs text-gray-400">SmartPandit Admin v2.0</p>
+        <p className="text-center text-xs text-gray-400">Store Admin v2.0</p>
       </div>
     </aside>
   );

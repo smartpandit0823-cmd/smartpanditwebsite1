@@ -3,69 +3,69 @@
 export const NAV_LINKS = {
   main: [
     { label: "Home", href: "/" },
-    { label: "Puja", href: "/puja" },
-    { label: "Astrology", href: "/astrology" },
     { label: "Store", href: "/store" },
+    { label: "Rudraksha", href: "/store?category=rudraksha" },
+    { label: "Puja Kits", href: "/store?category=puja-kits" },
   ],
   top: [
-    { label: "Temple", href: "/temple" },
-    { label: "Kumbh Mela", href: "/kumbh" },
+    { label: "Premium Kits", href: "/store?category=premium-kits" },
+    { label: "Blog", href: "/blog" },
     { label: "About", href: "/about" },
   ],
 } as const;
 
 export const BOTTOM_NAV = [
   { label: "Home", href: "/", icon: "Home" },
-  { label: "Puja", href: "/puja", icon: "Flame" },
-  { label: "Astro", href: "/astrology", icon: "Sparkles" },
+  { label: "Search", href: "/store", icon: "Search" },
   { label: "Store", href: "/store", icon: "ShoppingBag" },
-  { label: "Bookings", href: "/booking/my-bookings", icon: "Calendar" },
+  { label: "Wishlist", href: "/user/wishlist", icon: "Heart" },
+  { label: "Profile", href: "/user/profile", icon: "User" },
 ] as const;
 
-// ── Categories (Home Grid) ─────────────────────────────────────────────────
+// ── Store Categories (Home Grid) ─────────────────────────────────────────────
 
 export const CATEGORIES = [
   {
-    id: "puja",
-    name: "Puja",
-    slug: "/puja",
+    id: "rudraksha",
+    name: "Rudraksha",
+    slug: "/store?category=rudraksha",
+    icon: "Gem",
+    description: "Sacred beads for protection",
+  },
+  {
+    id: "puja-kits",
+    name: "Puja Kits",
+    slug: "/store?category=puja-kits",
     icon: "Flame",
-    description: "Book verified pandits",
+    description: "Complete ritual kits",
   },
   {
-    id: "astrology",
-    name: "Astrology",
-    slug: "/astrology",
+    id: "astrology-remedies",
+    name: "Astro Remedies",
+    slug: "/store?category=astrology-remedies",
     icon: "Sparkles",
-    description: "Talk to experts",
+    description: "Gemstones & yantras",
   },
   {
-    id: "temple",
-    name: "Temple",
-    slug: "/temple",
+    id: "temple-products",
+    name: "Temple Products",
+    slug: "/store?category=temple-products",
     icon: "Church",
-    description: "Temple puja booking",
+    description: "Prasad & temple items",
   },
   {
-    id: "store",
-    name: "Store",
-    slug: "/store",
-    icon: "ShoppingBag",
-    description: "Authentic products",
-  },
-  {
-    id: "kumbh",
-    name: "Kumbh",
-    slug: "/kumbh",
-    icon: "Waves",
-    description: "Pilgrimage packages",
-  },
-  {
-    id: "vip-darshan",
-    name: "VIP Darshan",
-    slug: "/kumbh",
+    id: "spiritual-jewellery",
+    name: "Jewellery",
+    slug: "/store?category=spiritual-jewellery",
     icon: "Crown",
-    description: "Priority spiritual access",
+    description: "Sacred spiritual pieces",
+  },
+  {
+    id: "premium-kits",
+    name: "Premium Kits",
+    slug: "/store?category=premium-kits",
+    icon: "Star",
+    description: "Curated custom combos",
   },
 ] as const;
 
@@ -74,35 +74,35 @@ export const CATEGORIES = [
 export const HOME_OFFERS = [
   {
     id: "offer-1",
-    title: "Maha Shivratri Special",
-    subtitle: "Up to 30% off on Rudrabhishek packages",
-    cta: "Book Festival Puja",
-    href: "/puja",
-    badge: "Festival Offer",
+    title: "Sacred Rudraksha Collection",
+    subtitle: "Energized & certified — starting ₹299",
+    cta: "Shop Rudraksha",
+    href: "/store?category=rudraksha",
+    badge: "Bestseller",
   },
   {
     id: "offer-2",
-    title: "Griha Pravesh Combo",
-    subtitle: "Pandit + samagri bundle from ₹2,499",
-    cta: "View Packages",
-    href: "/puja",
-    badge: "Trending",
-  },
-  {
-    id: "offer-3",
-    title: "Astrology Starter",
-    subtitle: "First consultation from ₹199/min",
-    cta: "Talk To Expert",
-    href: "/astrology",
+    title: "Festival Puja Kit",
+    subtitle: "Complete kit with samagri & mantra guide",
+    cta: "View Kits",
+    href: "/store?category=puja-kits",
     badge: "New",
   },
   {
+    id: "offer-3",
+    title: "Astrology Gemstones",
+    subtitle: "Lab-certified stones from expert astrologers",
+    cta: "Find Your Stone",
+    href: "/store?category=astrology-remedies",
+    badge: "Expert Verified",
+  },
+  {
     id: "offer-4",
-    title: "Temple VIP Darshan",
-    subtitle: "Fast-track darshan with guided rituals",
-    cta: "Explore Temple Services",
-    href: "/temple",
-    badge: "Limited Slots",
+    title: "Monthly Spiritual Box",
+    subtitle: "Curated items delivered every month",
+    cta: "Subscribe Now",
+    href: "/store?category=subscription-boxes",
+    badge: "New Launch",
   },
 ] as const;
 
@@ -111,46 +111,46 @@ export const HOME_OFFERS = [
 export const HOW_IT_WORKS = [
   {
     step: 1,
-    title: "Select Service",
-    desc: "Choose puja, astrology, temple service, or store item.",
+    title: "Browse & Discover",
+    desc: "Explore curated spiritual products by category or recommendation.",
     icon: "Search",
   },
   {
     step: 2,
-    title: "Book Instantly",
-    desc: "Pick package, date, and city with transparent pricing.",
-    icon: "Calendar",
+    title: "Order Instantly",
+    desc: "Add to cart, choose COD or pay online — quick checkout.",
+    icon: "ShoppingCart",
   },
   {
     step: 3,
-    title: "Pandit Assigned",
-    desc: "Verified pandit and support team confirm everything on WhatsApp.",
+    title: "Receive & Bless",
+    desc: "Authentic products delivered with certificate of authenticity.",
     icon: "CheckCircle",
   },
 ] as const;
 
-// ── Why SmartPandit ───────────────────────────────────────────────────────
+// ── Why SanatanSetu ───────────────────────────────────────────────────────
 
 export const WHY_SMARTPANDIT = [
   {
-    title: "Verified Pandits",
-    desc: "Background checked, ritual trained, and reviewed.",
+    title: "Pandit Verified",
+    desc: "Products recommended by verified pandits.",
     icon: "Shield",
   },
   {
-    title: "Secure Booking",
-    desc: "Safe payment flow with instant confirmations.",
-    icon: "Tag",
+    title: "Authentic & Certified",
+    desc: "Every item comes with authenticity certificate.",
+    icon: "BadgeCheck",
   },
   {
-    title: "Authentic Products",
-    desc: "Sourced spiritual items and samagri quality checks.",
-    icon: "MessageCircle",
+    title: "Astrologer Recommended",
+    desc: "Remedy products suggested by expert astrologers.",
+    icon: "Sparkles",
   },
   {
-    title: "Fast Support",
-    desc: "Real humans on call and WhatsApp for every booking.",
-    icon: "Zap",
+    title: "Fast Delivery",
+    desc: "Free shipping on orders ₹499+. COD available.",
+    icon: "Truck",
   },
 ] as const;
 
@@ -158,31 +158,34 @@ export const WHY_SMARTPANDIT = [
 
 export const TRUST_BADGES = [
   "Pandit Verified",
-  "Secure Booking",
-  "Authentic Products",
-  "1L+ Services Done",
-  "4.8★ Rating",
+  "Authenticity Certificate",
+  "Free Shipping ₹499+",
+  "COD Available",
+  "Easy Returns",
 ] as const;
 
 // ── Footer links ───────────────────────────────────────────────────────────
 
 export const FOOTER_LINKS = {
   services: [
-    { label: "Puja Booking", href: "/puja" },
-    { label: "Astrology", href: "/astrology" },
-    { label: "Store", href: "/store" },
-    { label: "Temple Puja", href: "/temple" },
-    { label: "Kumbh Mela", href: "/kumbh" },
+    { label: "Rudraksha", href: "/store?category=rudraksha" },
+    { label: "Puja Kits", href: "/store?category=puja-kits" },
+    { label: "Astro Remedies", href: "/store?category=astrology-remedies" },
+    { label: "Temple Products", href: "/store?category=temple-products" },
+    { label: "Premium Kits", href: "/store?category=premium-kits" },
+    { label: "Jewellery", href: "/store?category=spiritual-jewellery" },
   ],
   company: [
     { label: "About Us", href: "/about" },
     { label: "Contact", href: "/contact" },
+    { label: "Blog", href: "/blog" },
     { label: "FAQ", href: "/faq" },
   ],
   legal: [
     { label: "Privacy Policy", href: "/privacy-policy" },
     { label: "Terms of Service", href: "/terms" },
     { label: "Cancellation Policy", href: "/cancellation" },
+    { label: "Return Policy", href: "/return-policy" },
   ],
 } as const;
 

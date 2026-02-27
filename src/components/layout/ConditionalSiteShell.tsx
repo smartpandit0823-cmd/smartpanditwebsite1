@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { UserProvider } from "@/contexts/UserContext";
+import { CartProvider } from "@/contexts/CartContext";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { BottomNav } from "./BottomNav";
@@ -26,18 +27,32 @@ export function ConditionalSiteShell({ children }: { children: React.ReactNode }
     );
   }
 
+  // Pages where we don't want to show the BottomNav on mobile
+  const isProductPage = pathname?.startsWith("/store/");
+  const isCart = pathname === "/cart";
+  const isCheckout = pathname === "/checkout";
+  const isOrderSuccess = pathname?.startsWith("/order-success");
+  const isAddressPage = pathname?.startsWith("/user/addresses");
+  const isSettingsPage = pathname?.startsWith("/user/settings");
+
+  const hideBottomNavOnMobile = isProductPage || isCart || isCheckout || isOrderSuccess || isAddressPage || isSettingsPage;
+
   return (
     <UserProvider>
-      <div className="flex min-h-dvh flex-col">
-        <Header />
-        <main className="flex-1 pb-[72px] md:pb-0">{children}</main>
-        {/* Footer: hidden on mobile, shown on desktop */}
-        <div className="hidden md:block">
-          <Footer />
+      <CartProvider>
+        <div className="flex min-h-dvh flex-col">
+          <Header />
+          <main className={`flex-1 ${!hideBottomNavOnMobile ? "pb-24 md:pb-0" : ""}`}>
+            {children}
+          </main>
+          {/* Footer: hidden on mobile, shown on desktop */}
+          <div className="hidden md:block">
+            <Footer />
+          </div>
+          {!hideBottomNavOnMobile && <BottomNav />}
+          <WhatsAppButton />
         </div>
-        <BottomNav />
-        <WhatsAppButton />
-      </div>
+      </CartProvider>
     </UserProvider>
   );
 }

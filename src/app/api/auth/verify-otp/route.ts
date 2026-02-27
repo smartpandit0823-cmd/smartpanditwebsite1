@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
         city: city || undefined,
         googleId: googleData?.googleId || undefined,
         avatar: googleData?.avatar || undefined,
-        authProvider: googleData ? "google" : "otp",
+        authProvider: googleData ? "google" : "phone",
       });
     } else {
       // User exists, merge new data if provided

@@ -80,12 +80,19 @@ export interface AstrologyService {
 // ── Store / Products ───────────────────────────────────────────────────────
 
 export type ProductCategory =
+  | "rudraksha"
+  | "puja-kits"
+  | "astrology-remedies"
+  | "temple-products"
+  | "spiritual-jewellery"
+  | "premium-kits"
+  | "digital-products"
+  | "subscription-boxes"
   | "idols"
   | "samagri"
   | "books"
   | "jewelry"
   | "incense"
-  | "rudraksha"
   | "gemstones"
   | "yantras";
 
@@ -93,7 +100,7 @@ export interface Product {
   id: string;
   slug: string;
   name: string;
-  category: ProductCategory;
+  category: ProductCategory | string;
   images: string[];
   price: number;
   originalPrice?: number;
@@ -107,6 +114,13 @@ export interface Product {
   weight?: string;
   material?: string;
   featured?: boolean;
+  panditRecommended?: boolean;
+  astrologerRecommended?: boolean;
+  video?: string;
+  howToUse?: string;
+  spiritualStory?: string;
+  subscriptionAvailable?: boolean;
+  bundleAvailable?: boolean;
 }
 
 // ── Temple ─────────────────────────────────────────────────────────────────
