@@ -26,6 +26,10 @@ import {
   BookOpen,
   Phone,
   Info,
+  Truck,
+  Shield,
+  Star,
+  RotateCcw,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -34,6 +38,7 @@ const MENU_ITEMS = [
   { label: "Store", href: "/store", icon: ShoppingBag, highlight: true },
   { label: "Rudraksha", href: "/store?category=rudraksha", icon: Gem },
   { label: "Puja Kits", href: "/store?category=puja-kits", icon: Package },
+  { label: "Calculators", href: "/calculators", icon: Sparkles },
 ];
 
 const PROFILE_ITEMS = [
@@ -43,6 +48,13 @@ const PROFILE_ITEMS = [
   { label: "Saved Addresses", href: "/user/addresses", icon: MapPin },
   { label: "Notifications", href: "/user/notifications", icon: Bell },
   { label: "Settings", href: "/user/settings", icon: Settings },
+];
+
+const OFFER_MESSAGES = [
+  { icon: Shield, text: "100% Natural & Lab Certified" },
+  { icon: Sparkles, text: "Energised by Experts" },
+  { icon: Truck, text: "COD Available" },
+  { icon: Shield, text: "7 Day Easy Return" },
 ];
 
 export function Header() {
@@ -73,43 +85,28 @@ export function Header() {
   }
 
   const isHome = pathname === "/";
-  const isTransparent = isHome && !isScrolled;
 
   return (
     <>
       <header
-        className={`fixed top-0 z-50 w-full border-b transition-all duration-300 ${isTransparent
-          ? "bg-warm-900/25 backdrop-blur-md border-transparent shadow-none"
-          : "bg-warm-50/95 backdrop-blur-md border-gold-200/50 shadow-sm supports-backdrop-filter:bg-warm-50/85"
+        className={`fixed top-0 z-50 w-full transition-all duration-300 ${isScrolled
+          ? "bg-white/95 backdrop-blur-xl shadow-[0_2px_20px_rgba(0,0,0,0.06)]"
+          : "bg-white"
           }`}
       >
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 md:h-16">
-          {/* Hamburger (Mobile) */}
+        {/* ═══ Top Bar: Logo centered, Search + Cart + Profile ═══ */}
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
+          {/* Left: Hamburger (Mobile) */}
           <button
             type="button"
             aria-label="Open menu"
-            className={`flex size-10 shrink-0 items-center justify-center rounded-xl transition-colors md:hidden ${isTransparent
-              ? "text-white hover:bg-white/10 active:bg-white/20"
-              : "text-warm-800 hover:bg-saffron-50 active:bg-saffron-50"
-              }`}
+            className="flex size-10 shrink-0 items-center justify-center rounded-xl text-warm-800 hover:bg-saffron-50 active:bg-saffron-100 transition-colors md:hidden"
             onClick={() => setOpen(true)}
           >
-            <Menu size={22} strokeWidth={2.2} />
+            <Menu size={22} strokeWidth={2} />
           </button>
 
-          {/* Logo */}
-          <Link
-            href="/"
-            className={`font-heading text-xl font-bold md:text-2xl transition-colors ${isTransparent ? "text-white" : "text-saffron-600"
-              }`}
-          >
-            <span className="flex items-center gap-1.5">
-              <span className="text-2xl drop-shadow-sm">🙏</span>
-              SanatanSetu
-            </span>
-          </Link>
-
-          {/* Desktop Nav */}
+          {/* Desktop left nav */}
           <nav className="hidden items-center gap-6 md:flex">
             {[
               { label: "Home", href: "/" },
@@ -121,14 +118,14 @@ export function Header() {
               const isActive =
                 pathname === link.href ||
                 (link.href !== "/" && pathname?.startsWith(link.href));
-              const linkClasses = isTransparent
-                ? `text-white/90 hover:text-white ${isActive ? "text-white font-bold drop-shadow-md" : ""}`
-                : `text-warm-800 hover:text-saffron-600 ${isActive ? "text-saffron-600 font-bold" : ""}`;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm tracking-wide font-medium transition-all ${linkClasses}`}
+                  className={`text-sm tracking-wide font-medium transition-all ${isActive
+                    ? "text-saffron-600 font-bold"
+                    : "text-warm-800 hover:text-saffron-600"
+                    }`}
                 >
                   {link.label}
                 </Link>
@@ -136,63 +133,67 @@ export function Header() {
             })}
           </nav>
 
-          {/* Right Area */}
-          <div className="flex items-center gap-2">
-            {/* Search icon */}
-            <button
-              className={`flex size-9 items-center justify-center rounded-full transition-colors ${isTransparent
-                ? "text-white hover:bg-white/10"
-                : "text-warm-700 hover:bg-saffron-50"
-                }`}
+          {/* Center: Logo */}
+          <Link
+            href="/"
+            className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0"
+          >
+            <span className="flex items-center gap-1.5 font-heading text-xl font-bold text-saffron-600 md:text-2xl">
+              <span className="text-2xl drop-shadow-sm">🙏</span>
+              <span className="hidden xs:inline">SanatanSetu</span>
+              <span className="xs:hidden">SS</span>
+            </span>
+          </Link>
+
+          {/* Right: Icons */}
+          <div className="flex items-center gap-1 md:gap-2">
+            {/* Search */}
+            <Link
+              href="/search"
+              className="flex size-9 items-center justify-center rounded-full text-warm-700 hover:bg-saffron-50 transition-colors icon-glow"
               aria-label="Search"
             >
-              <Search size={18} />
-            </button>
+              <Search size={19} strokeWidth={1.8} />
+            </Link>
 
-            {/* Cart icon */}
+            {/* Cart */}
             <Link
               href="/cart"
-              className={`relative flex size-9 items-center justify-center rounded-full transition-colors ${isTransparent
-                ? "text-white hover:bg-white/10"
-                : "text-warm-700 hover:bg-saffron-50"
-                }`}
+              className="relative flex size-9 items-center justify-center rounded-full text-warm-700 hover:bg-saffron-50 transition-colors icon-glow"
               aria-label="Cart"
             >
-              <ShoppingCart size={18} />
-              {/* Cart badge placeholder */}
+              <ShoppingCart size={19} strokeWidth={1.8} />
               {cartCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white animate-in zoom-in duration-200">
+                <span className="absolute -right-0.5 -top-0.5 flex size-[18px] items-center justify-center rounded-full bg-gradient-to-br from-saffron-500 to-saffron-600 text-[9px] font-bold text-white shadow-md animate-badge-bounce">
                   {cartCount > 9 ? "9+" : cartCount}
                 </span>
               )}
             </Link>
 
+            {/* Profile (Mobile) */}
+            <Link
+              href={user ? "/user/profile" : "/user/login"}
+              className="flex size-9 items-center justify-center rounded-full text-warm-700 hover:bg-saffron-50 transition-colors md:hidden icon-glow"
+              aria-label="Account"
+            >
+              <User size={19} strokeWidth={1.8} />
+            </Link>
+
             {/* Desktop User/Login */}
-            <div className="hidden md:block">
+            <div className="hidden md:block ml-1">
               {user ? (
                 <Link href="/user/profile" className="flex items-center gap-2 group">
-                  <div
-                    className={`flex size-9 items-center justify-center rounded-full transition-colors ${isTransparent
-                      ? "bg-white/20 text-white group-hover:bg-white/30"
-                      : "bg-saffron-100 text-saffron-700 group-hover:bg-saffron-200"
-                      }`}
-                  >
+                  <div className="flex size-9 items-center justify-center rounded-full bg-saffron-100 text-saffron-700 group-hover:bg-saffron-200 transition-colors">
                     <User size={16} />
                   </div>
-                  <span
-                    className={`text-sm font-semibold transition-colors ${isTransparent ? "text-white" : "text-warm-900"
-                      }`}
-                  >
+                  <span className="text-sm font-semibold text-warm-900">
                     {user.name?.split(" ")[0] || "Profile"}
                   </span>
                 </Link>
               ) : (
                 <Link
                   href="/user/login"
-                  className={`text-sm font-semibold transition-colors ${isTransparent
-                    ? "text-white hover:text-saffron-200"
-                    : "text-warm-900 hover:text-saffron-600"
-                    }`}
+                  className="text-sm font-semibold text-warm-900 hover:text-saffron-600 transition-colors"
                 >
                   Login
                 </Link>
@@ -200,10 +201,28 @@ export function Header() {
             </div>
           </div>
         </div>
+
+        {/* ═══ Scrolling Offer Bar ═══ */}
+        <div className="border-t border-saffron-100 bg-gradient-to-r from-saffron-50 to-gold-50 overflow-hidden">
+          <div className="flex animate-offer-scroll whitespace-nowrap py-1.5">
+            {[...OFFER_MESSAGES, ...OFFER_MESSAGES].map((offer, i) => {
+              const Icon = offer.icon;
+              return (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1.5 px-6 text-[11px] font-medium text-saffron-700"
+                >
+                  <Icon size={12} className="text-gold-600 shrink-0" />
+                  {offer.text}
+                  <span className="text-gold-400 ml-4">✦</span>
+                </span>
+              );
+            })}
+          </div>
+        </div>
       </header>
 
       {/* ═══════ FULLSCREEN MENU DRAWER (Mobile) ═══════ */}
-
       {/* Backdrop */}
       <div
         className={`fixed inset-0 z-60 bg-black/40 backdrop-blur-sm transition-opacity duration-300 md:hidden ${open ? "opacity-100" : "pointer-events-none opacity-0"
@@ -260,7 +279,6 @@ export function Header() {
 
         {/* Menu Items */}
         <nav className="flex-1 overflow-y-auto px-3 py-3">
-          {/* Main Nav */}
           <p className="mb-2 px-4 text-[10px] font-semibold uppercase tracking-wider text-warm-400">
             Shop
           </p>
@@ -377,7 +395,7 @@ export function Header() {
           ) : (
             <Link
               href="/user/login"
-              className="gradient-saffron flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-sm font-bold text-white shadow-lg"
+              className="gradient-saffron flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-sm font-bold text-white shadow-lg btn-glow"
               onClick={() => setOpen(false)}
             >
               <LogIn size={16} />

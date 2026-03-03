@@ -1,13 +1,19 @@
 "use client";
 
-import {
-    StoreBannerSlider,
-    StoreCategoriesGrid,
-    StoreProductSection,
-    StoreUSPBar,
-    StoreReelsDiscovery,
-    StoreCTASection,
-} from "@/components/store";
+import { HeroSection } from "@/components/home/HeroSection";
+import { ShopByPurpose } from "@/components/home/ShopByPurpose";
+import { BestSellers } from "@/components/home/BestSellers";
+import { TrendingNow } from "@/components/home/TrendingNow";
+import { ComboDeals } from "@/components/home/ComboDeals";
+import { ZodiacSlider } from "@/components/home/ZodiacSlider";
+import { RudrakshaFeature } from "@/components/home/RudrakshaFeature";
+import { VastuIdols } from "@/components/home/VastuIdols";
+import { PyramidCrystal } from "@/components/home/PyramidCrystal";
+import { SiddhCollection } from "@/components/home/SiddhCollection";
+import { BlogPreview } from "@/components/home/BlogPreview";
+import { CustomerReviews } from "@/components/home/CustomerReviews";
+import { WhySmartPandit } from "@/components/home/WhySmartPandit";
+import { InstagramCommunity } from "@/components/home/InstagramCommunity";
 
 interface StoreProduct {
     id: string;
@@ -30,62 +36,81 @@ interface StoreProduct {
     video?: string;
 }
 
-export function StoreHomeClient({ products }: { products: StoreProduct[] }) {
-    const trendingProducts = products.filter((p) => p.featured).slice(0, 8);
-    const panditPicks = products.filter((p) => p.panditRecommended).slice(0, 8);
-    const allProducts = products.slice(0, 12);
-    const reelProducts = products.filter((p) => p.images.length > 0).slice(0, 10);
+interface BannerData {
+    _id: string;
+    title: string;
+    subtitle?: string;
+    image: string;
+    mobileImage?: string;
+    link?: string;
+}
 
-    // If no pandit picks exist, use first 4 featured as demo
-    const panditSection =
-        panditPicks.length > 0 ? panditPicks : trendingProducts.slice(0, 4);
+export function StoreHomeClient({
+    products,
+    banners,
+}: {
+    products: StoreProduct[];
+    banners: BannerData[];
+}) {
+    // Categorize products
+    const bestSellers = products.filter((p) => p.featured).slice(0, 8);
+    const siddhProducts = products
+        .filter((p) => p.isAuthentic || p.panditRecommended)
+        .slice(0, 10);
+    const allProducts = products.slice(0, 12);
+
+    // Use best available selection
+    const bestSellersList =
+        bestSellers.length > 0 ? bestSellers : allProducts.slice(0, 6);
+    const siddhList =
+        siddhProducts.length > 0 ? siddhProducts : allProducts.slice(0, 6);
 
     return (
-        <div className="min-h-dvh page-enter">
-            {/* 1. Hero Banner Slider */}
-            <StoreBannerSlider />
+        <div className="min-h-dvh">
+            {/* 2. Hero Section */}
+            <HeroSection banners={banners} />
 
-            {/* 2. USP Trust Bar */}
-            <StoreUSPBar />
+            {/* 3. Shop By Purpose */}
+            <ShopByPurpose />
 
-            {/* 3. Categories Grid */}
-            <StoreCategoriesGrid />
+            {/* 4. Best Sellers */}
+            <BestSellers products={bestSellersList} />
 
-            {/* 4. Trending Products */}
-            <StoreProductSection
-                title="Trending Now"
-                subtitle="Most popular spiritual products this week"
-                products={trendingProducts.length > 0 ? trendingProducts : allProducts.slice(0, 4)}
-                viewAllHref="/store"
-                badge="🔥 Hot"
-            />
+            {/* 5. Trending Now */}
+            <TrendingNow />
 
-            {/* 5. Reels-style Discovery */}
-            <StoreReelsDiscovery products={reelProducts} />
+            {/* 6. Combo Deals */}
+            <ComboDeals />
 
-            {/* 6. Pandit Recommended (USP) */}
-            <StoreProductSection
-                title="Pandit Recommended"
-                subtitle="Handpicked by our verified pandits for your rituals"
-                products={panditSection}
-                viewAllHref="/store?filter=pandit-recommended"
-                badge="Pandit Verified"
-                badgeEmoji="🙏"
-            />
+            {/* 7. Zodiac Section */}
+            <ZodiacSlider />
 
-            {/* 7. CTA Section */}
-            <StoreCTASection />
+            {/* 8. Rudraksha Feature */}
+            <RudrakshaFeature />
 
-            {/* 8. All Products */}
-            <StoreProductSection
-                title="All Products"
-                subtitle="Browse our complete spiritual collection"
-                products={allProducts}
-                viewAllHref="/store"
-            />
+            {/* 8. Vastu & Idols */}
+            <VastuIdols />
+
+            {/* 9. Pyramids & Crystals */}
+            <PyramidCrystal />
+
+            {/* 10. Siddh Collection */}
+            <SiddhCollection products={siddhList} />
+
+            {/* 11. Blog Preview */}
+            <BlogPreview />
+
+            {/* 12. Testimonials */}
+            <CustomerReviews />
+
+            {/* 13. Why SmartPandit */}
+            <WhySmartPandit />
+
+            {/* 14. Instagram Community */}
+            <InstagramCommunity />
 
             {/* Decorative Mandala Background */}
-            <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.015] overflow-hidden">
+            <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.012] overflow-hidden">
                 <div className="absolute -right-32 -top-32 size-96 animate-mandala">
                     <svg viewBox="0 0 200 200" fill="none" className="size-full text-saffron-600">
                         <circle cx="100" cy="100" r="80" stroke="currentColor" strokeWidth="0.5" />
