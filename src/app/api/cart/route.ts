@@ -12,12 +12,15 @@ export async function GET() {
     }
 
     await connectDB();
+
+    // Ensure Product model is registered for populate
+    Product.init();
     const cart = await Cart.findOne({ userId: session.userId })
-      .populate("items.productId", "name mainImage pricing inventory")
+      .populate("items.productId", "name mainImage pricing inventory codAvailable")
       .lean();
 
     const items = (cart?.items || []).map((item: { productId: unknown; quantity: number; price: number }) => {
-      const p = item.productId as { _id: string; name: string; mainImage: string; pricing: { sellingPrice: number }; inventory?: { inStock: boolean } } | null;
+      const p = item.productId as { _id: string; name: string; mainImage: string; pricing: { sellingPrice: number }; inventory?: { inStock: boolean; codAvailable?: boolean }, codAvailable?: boolean } | null;
       return {
         productId: p?._id,
         name: p?.name,
@@ -26,6 +29,7 @@ export async function GET() {
         quantity: item.quantity,
         subtotal: item.price * item.quantity,
         inStock: p?.inventory?.inStock ?? true,
+        codAvailable: p?.inventory?.codAvailable ?? p?.codAvailable ?? true,
       };
     });
 

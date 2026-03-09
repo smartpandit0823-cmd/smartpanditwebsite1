@@ -103,15 +103,19 @@ async function seed() {
     if (!exists) {
       await Product.create({
         ...pd,
+        sku: `SP-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         shortDescription: `Authentic ${pd.name} for puja.`,
         fullDescription: `High quality ${pd.name} for your spiritual practice.`,
         mainImage: "https://placehold.co/400x400?text=Product",
         images: [],
         pricing: { sellingPrice: pd.sellingPrice, mrp: pd.mrp, discount: Math.round(((pd.mrp - pd.sellingPrice) / pd.mrp) * 100), gst: 0 },
         inventory: { stock: 50, sku: `SP-${Date.now()}`, inStock: true, lowStockThreshold: 5 },
-        variants: {},
-        shipping: { deliveryCharge: 49, freeShipping: pd.sellingPrice >= 500, deliveryDays: 5 },
-        seo: { seoTitle: pd.name, metaDescription: `Buy ${pd.name}`, keywords: [] },
+        variants: [],
+        shipping: { shippingCharge: 49, freeShipping: pd.sellingPrice >= 500, deliveryDays: 5, deliveryCharge: 49 },
+        seo: { metaTitle: pd.name, seoTitle: pd.name, metaDescription: `Buy ${pd.name}`, keywords: [] },
+        visibility: { showInBestSellers: true, showInTrending: false, showInCombos: false, showInZodiac: false, showInSiddh: false, showInFeaturedRudraksha: false, showInVastu: false, showInPyramids: false, showOnHome: true },
+        purposeTags: [],
+        zodiacSigns: [],
         status: "published",
       });
       console.log("Created product:", pd.name);
@@ -279,8 +283,8 @@ async function seed() {
   }
 
   const couponsData = [
-    { code: "WELCOME10", type: "percent", value: 10, usageLimit: 100 },
-    { code: "FLAT200", type: "flat", value: 200, minOrderAmount: 1000, usageLimit: 50 },
+    { code: "WELCOME10", type: "percentage", discountValue: 10, usageLimit: 100 },
+    { code: "FLAT200", type: "flat", discountValue: 200, minOrderAmount: 1000, usageLimit: 50 },
   ];
 
   for (const c of couponsData) {
@@ -289,7 +293,8 @@ async function seed() {
       await Coupon.create({
         ...c,
         status: "active",
-        applicableTo: "all",
+        applicableOn: "all",
+        expiresAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)), // 1 year expiry
       });
       console.log("Created coupon:", c.code);
     }

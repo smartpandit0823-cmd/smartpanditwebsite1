@@ -80,7 +80,7 @@ export function OfferPopup() {
                             const bgImg = offer.image || OFFER_IMG[offer.id] || "/images/offers/default.jpg";
                             const ctaText = offer.type === "store" ? "Shop Now" : offer.type === "puja" ? "Book Puja" : "Claim Offer";
                             const href = offer.targetSlug && offer.type === "puja" ? `/puja/${offer.targetSlug}`
-                                : offer.targetSlug && offer.type === "store" ? `/store/${offer.targetSlug}`
+                                : offer.targetSlug && offer.type === "store" ? `/product/${offer.targetSlug}`
                                     : offer.href || "/offers";
 
                             return (

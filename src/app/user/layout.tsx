@@ -38,9 +38,9 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
 
                 {/* ── Desktop Sidebar ── */}
                 <aside className="hidden w-64 shrink-0 md:block">
-                    <div className="sticky top-24 overflow-hidden rounded-2xl border border-saffron-200/50 bg-[#fffdf7] shadow-xl shadow-saffron-100">
-                        <div className="p-4 bg-linear-to-r from-saffron-50 to-orange-50/50 border-b border-saffron-100">
-                            <h2 className="font-heading text-lg font-bold text-warm-900">My Account</h2>
+                    <div className="sticky top-24 overflow-hidden rounded-[12px] border border-orange-100 bg-[#FFFFFF] shadow-[0_2px_16px_rgba(255,140,0,0.08)]">
+                        <div className="p-4 bg-[#FEFAF4] border-b border-orange-100">
+                            <h2 className="font-heading text-lg font-bold text-[#1A1A1A]">My Account</h2>
                         </div>
                         <nav className="flex flex-col p-2">
                             {SIDEBAR_LINKS.map((link) => {
@@ -50,23 +50,23 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
                                     <Link
                                         key={link.href}
                                         href={link.href}
-                                        className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive
-                                            ? "bg-linear-to-r from-saffron-500 to-saffron-600 text-white shadow-md shadow-saffron-200/50"
-                                            : "text-warm-700 hover:bg-saffron-50 hover:text-saffron-700"
+                                        className={`flex items-center gap-3 rounded-[8px] px-4 py-3 text-sm font-bold transition-colors ${isActive
+                                            ? "bg-[#FF8C00] text-white shadow-md shadow-[#FF8C00]/20"
+                                            : "text-[#888888] hover:bg-[#FEFAF4] hover:text-[#1A1A1A]"
                                             }`}
                                     >
-                                        <Icon size={18} className={isActive ? "text-white" : "text-saffron-500"} />
+                                        <Icon size={18} className={isActive ? "text-white" : "text-[#888888] group-hover:text-[#FF8C00]"} />
                                         {link.label}
                                     </Link>
                                 );
                             })}
-                            <div className="my-2 h-px bg-warm-100 mx-2" />
+                            <div className="my-2 h-px bg-gray-100 mx-2" />
                             <button
                                 onClick={() => {
                                     logout();
                                     window.location.href = "/";
                                 }}
-                                className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                                className="flex items-center gap-3 rounded-[8px] px-4 py-3 text-sm font-bold text-red-500 transition-colors hover:bg-red-50"
                             >
                                 <LogOut size={18} />
                                 Logout
@@ -77,7 +77,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
 
                 {/* ── Content Area ── */}
                 <main className="flex-1">
-                    <div className="md:rounded-3xl md:border md:border-saffron-200/50 md:bg-white md:p-8 md:shadow-2xl md:shadow-warm-100/50">
+                    <div className="md:rounded-[12px] md:border md:border-orange-100 md:bg-[#FFFFFF] md:p-8 md:shadow-[0_2px_16px_rgba(255,140,0,0.08)]">
                         {children}
                     </div>
                 </main>

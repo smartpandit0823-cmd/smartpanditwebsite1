@@ -143,7 +143,7 @@ export default function AddressesPage() {
                 const ac = results[0].address_components;
                 let pincode = "", city = "", area = "", state = "", line1 = "";
 
-                for (let comp of ac) {
+                for (const comp of ac) {
                     if (comp.types.includes("postal_code")) pincode = comp.long_name;
                     if (comp.types.includes("locality")) city = comp.long_name;
                     else if (comp.types.includes("administrative_area_level_3") && !city) city = comp.long_name;

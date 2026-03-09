@@ -24,7 +24,7 @@ const CartSchema = new Schema<ICart>(
   { timestamps: { updatedAt: true, createdAt: false } }
 );
 
-CartSchema.index({ userId: 1 });
+
 
 const Cart: Model<ICart> =
   mongoose.models.Cart || mongoose.model<ICart>("Cart", CartSchema);

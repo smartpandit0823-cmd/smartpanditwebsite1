@@ -9,6 +9,7 @@ import Notification from "@/models/Notification";
 import { verifyPaymentSignature } from "@/lib/razorpay";
 import { logApiError } from "@/lib/api-logger";
 import { z } from "zod";
+import { createShipment } from "@/lib/shipping/delhivery";
 
 const BodySchema = z.object({
   razorpay_order_id: z.string(),
@@ -82,10 +83,47 @@ export async function POST(req: NextRequest) {
         read: false,
       });
     } else if (payment.entityType === "order") {
+      const order = await Order.findById(payment.entityId).populate("items.productId");
+      let delhiveryWaybill;
+      let delhiveryStatus;
+
+      if (order) {
+        // Find total weight of the order
+        const totalWeightGrams = order.items.reduce((acc, i) => acc + (500 * i.quantity), 0);
+
+        try {
+          const shipmentRes = await createShipment({
+            orderId: order._id.toString(),
+            customerName: order.shippingAddress.name,
+            customerPhone: order.shippingAddress.phone,
+            customerAddress: order.shippingAddress.address,
+            customerCity: order.shippingAddress.city,
+            customerState: order.shippingAddress.state,
+            customerPincode: order.shippingAddress.pincode,
+            paymentMode: "Prepaid",
+            codAmount: 0,
+            totalAmount: order.totalAmount,
+            productDesc: order.items.map((i) => i.name).join(", "),
+            weight: totalWeightGrams,
+            quantity: order.items.reduce((acc, i) => acc + i.quantity, 0),
+          });
+
+          if (shipmentRes.success && shipmentRes.waybill) {
+            delhiveryWaybill = shipmentRes.waybill;
+            delhiveryStatus = "Manifested";
+          } else {
+            console.error("Delhivery Paid Shipment failed: ", shipmentRes.error);
+          }
+        } catch (err) {
+          console.error("Delhivery API connection failed: ", err);
+        }
+      }
+
       await Order.findByIdAndUpdate(payment.entityId, {
-        status: "paid",
+        status: "processing", // Auto-move paid orders to processing
         paymentStatus: "paid",
         razorpayPaymentId: razorpay_payment_id,
+        ...(delhiveryWaybill && { delhiveryWaybill, delhiveryStatus })
       });
       await Notification.create({
         userId: payment.userId,

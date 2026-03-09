@@ -9,6 +9,7 @@ export interface UserProfile {
     email?: string;
     avatar?: string;
     city?: string;
+    addresses?: any[];
 }
 
 interface UserContextType {

@@ -23,6 +23,7 @@ export async function GET() {
       email: user.email,
       avatar: user.avatar,
       city: user.city,
+      addresses: user.addresses || [],
     },
   });
 }

@@ -1,89 +1,97 @@
-"use client";
-
 import Link from "next/link";
-import { BookOpen, ArrowRight } from "lucide-react";
+import { BookOpen, Clock } from "lucide-react";
+import { BlogPost } from "@/app/(store)/StoreHomeClient";
 
-const BLOG_POSTS = [
-    {
-        id: "b1",
-        title: "How to Choose the Right Rudraksha for You",
-        excerpt: "Learn about different Mukhi Rudraksha beads and their spiritual benefits based on your zodiac sign.",
-        category: "Rudraksha Guide",
-        readTime: "5 min read",
-        emoji: "📿",
-    },
-    {
-        id: "b2",
-        title: "Which Gemstone is Right For Your Rashi?",
-        excerpt: "Discover the perfect gemstone recommendation based on your birth chart and planetary positions.",
-        category: "Gemstones",
-        readTime: "4 min read",
-        emoji: "💎",
-    },
-    {
-        id: "b3",
-        title: "Daily Puja Vidhi: Steps for Morning Worship",
-        excerpt: "A complete guide to performing morning puja at home with proper mantras and rituals.",
-        category: "Puja Guide",
-        readTime: "6 min read",
-        emoji: "🪔",
-    },
-];
+const CATEGORY_COLORS: Record<string, string> = {
+    "RUDRAKSHA GUIDE": "bg-orange-100 text-[#FF8C00]",
+    "GEMSTONES": "bg-blue-100 text-blue-600",
+    "PUJA GUIDE": "bg-green-100 text-[#00B894]",
+    "VASTU": "bg-purple-100 text-purple-600",
+    "ASTROLOGY": "bg-indigo-100 text-indigo-600",
+    "CRYSTALS": "bg-pink-100 text-pink-600",
+};
 
-export function BlogPreview() {
+const CATEGORY_EMOJIS: Record<string, string> = {
+    "RUDRAKSHA GUIDE": "📿",
+    "GEMSTONES": "💎",
+    "PUJA GUIDE": "🪔",
+    "VASTU": "🏠",
+    "ASTROLOGY": "🔮",
+    "CRYSTALS": "✨",
+};
+
+export function BlogPreview({ blogs }: { blogs: BlogPost[] }) {
+    const displayBlogs = blogs.slice(0, 3);
+
     return (
-        <section className="section-shell">
-            <div className="section-wrap">
-                {/* Header */}
-                <div className="flex items-end justify-between mb-6">
+        <section className="py-8 md:py-10 px-4 bg-white border-y border-orange-50">
+            <div className="max-w-7xl mx-auto">
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
                     <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <BookOpen size={16} className="text-saffron-600" />
-                            <span className="text-xs font-semibold text-saffron-600 uppercase tracking-wider">
-                                Spiritual Wisdom
-                            </span>
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-[#FF8C00] rounded-full text-[11px] font-bold uppercase tracking-widest mb-3">
+                            <BookOpen size={12} />
+                            SPIRITUAL WISDOM
                         </div>
-                        <h2 className="font-heading text-2xl md:text-3xl font-bold text-warm-900">
+                        <h2 className="text-3xl md:text-4xl font-heading font-bold text-[#1A1A1A] leading-tight">
                             From Our Blog
                         </h2>
                     </div>
+
                     <Link
                         href="/blog"
-                        className="text-xs font-semibold text-saffron-600 hover:text-saffron-700 transition-colors flex items-center gap-1"
+                        className="text-sm font-bold text-[#FF8C00] hover:text-[#E67E00] flex items-center transition-group group"
                     >
-                        All Posts <ArrowRight size={12} />
+                        All Posts <span className="ml-1 text-lg group-hover:translate-x-1 transition-transform">→</span>
                     </Link>
                 </div>
 
-                {/* Blog Cards */}
-                <div className="space-y-3 md:grid md:grid-cols-3 md:space-y-0 md:gap-4">
-                    {BLOG_POSTS.map((post) => (
-                        <Link
-                            key={post.id}
-                            href={`/blog/${post.id}`}
-                            className="group flex gap-4 card-surface rounded-xl p-4 hover:shadow-card-hover transition-all md:flex-col md:gap-0"
-                        >
-                            {/* Emoji thumbnail (mobile: left, desktop: top) */}
-                            <div className="flex size-16 md:size-auto md:h-32 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-saffron-50 to-gold-50 text-3xl md:text-4xl md:rounded-b-none md:mb-3">
-                                {post.emoji}
-                            </div>
+                <div className="flex flex-col md:flex-row gap-6">
+                    {displayBlogs.map((post) => {
+                        const catKey = post.category?.toUpperCase().trim();
+                        const catColor = CATEGORY_COLORS[catKey] || "bg-orange-100 text-[#FF8C00]";
+                        const catEmoji = CATEGORY_EMOJIS[catKey] || "📖";
 
-                            <div className="flex-1 min-w-0">
-                                <span className="text-[10px] font-semibold text-saffron-600 uppercase tracking-wide">
-                                    {post.category}
-                                </span>
-                                <h3 className="text-sm font-semibold text-warm-900 mt-0.5 line-clamp-2 group-hover:text-saffron-700 transition-colors">
+                        return (
+                            <Link
+                                key={post.id}
+                                href={`/blog/${post.slug}`}
+                                className="group flex-1 bg-[#FEFAF4] border border-orange-100 rounded-2xl p-6 hover:shadow-[0_8px_32px_rgba(255,140,0,0.08)] transition-all hover:bg-white hover:-translate-y-1 block"
+                            >
+                                <div className={`inline-flex items-center px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider mb-5 ${catColor}`}>
+                                    {post.category?.toUpperCase()}
+                                </div>
+
+                                {post.featuredImage ? (
+                                    <div className="w-full h-[140px] rounded-xl overflow-hidden mb-5">
+                                        <img
+                                            src={post.featuredImage}
+                                            alt={post.title}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="w-[60px] h-[60px] rounded-full bg-orange-50 flex items-center justify-center text-3xl mb-5 shadow-inner">
+                                        {catEmoji}
+                                    </div>
+                                )}
+
+                                <h3 className="font-bold text-[#1A1A1A] text-[15px] md:text-[17px] leading-tight mb-2 group-hover:text-[#FF8C00] transition-colors">
                                     {post.title}
                                 </h3>
-                                <p className="text-xs text-warm-500 mt-1 line-clamp-2 hidden md:block">
-                                    {post.excerpt}
-                                </p>
-                                <span className="text-[10px] text-warm-400 mt-1.5 block">
-                                    {post.readTime}
-                                </span>
-                            </div>
-                        </Link>
-                    ))}
+
+                                {post.excerpt && (
+                                    <p className="text-[13px] text-[#888888] font-medium leading-relaxed mb-5 line-clamp-2">
+                                        {post.excerpt}
+                                    </p>
+                                )}
+
+                                <div className="flex items-center gap-1.5 text-[12px] text-[#888888] font-bold uppercase tracking-wider mt-auto pt-4 border-t border-orange-100/50">
+                                    <Clock size={12} className="text-[#FF8C00]" />
+                                    {post.readTime || "5 min read"}
+                                </div>
+                            </Link>
+                        );
+                    })}
                 </div>
             </div>
         </section>

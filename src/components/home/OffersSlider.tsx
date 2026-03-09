@@ -58,7 +58,7 @@ export function OffersSlider() {
   if (loading || offers.length === 0) return null;
 
   return (
-    <section className="relative overflow-hidden bg-warn-50 py-8 md:py-12">
+    <section className="relative overflow-hidden bg-warn-50 py-6 md:py-8">
       <div className="absolute left-0 top-0 h-full w-full bg-[#fcf9f2] opacity-50" />
       <div className="section-wrap relative z-10">
         <SectionHeader
@@ -72,7 +72,7 @@ export function OffersSlider() {
               const bgImg = offer.image || OFFER_IMG[offer.id] || "/images/offers/default.jpg";
               const ctaText = offer.type === "store" ? "Shop Now" : offer.type === "puja" ? "Book Puja" : "Claim Offer";
               const href = offer.targetSlug && offer.type === "puja" ? `/puja/${offer.targetSlug}`
-                : offer.targetSlug && offer.type === "store" ? `/store/${offer.targetSlug}`
+                : offer.targetSlug && offer.type === "store" ? `/product/${offer.targetSlug}`
                   : offer.href || "/offers";
               return (
                 <Link key={offer._id || offer.id} href={href} className="group relative w-full overflow-hidden rounded-3xl border border-saffron-200/50 shadow-xl transition-transform duration-500 hover:shadow-2xl hover:-translate-y-1 block">

@@ -1,69 +1,73 @@
-"use client";
+import { ShieldCheck, QrCode, Truck, HeartHandshake, Award } from "lucide-react";
 
-import { CheckCircle2, QrCode, Truck, HeartHandshake, ShieldCheck } from "lucide-react";
+const USPS = [
+  {
+    icon: <ShieldCheck size={28} />,
+    title: "Lab Certified",
+    subtitle: "ISO lab certification",
+    color: "text-[#00CEC9]",
+    bg: "bg-[#e5fbf9]"
+  },
+  {
+    icon: <QrCode size={28} />,
+    title: "Authenticity QR",
+    subtitle: "Scan to verify origin",
+    color: "text-[#FF8C00]",
+    bg: "bg-orange-50"
+  },
+  {
+    icon: <Truck size={28} />,
+    title: "Fast Shipping",
+    subtitle: "Secure doorstep delivery",
+    color: "text-[#6366F1]",
+    bg: "bg-indigo-50"
+  },
+  {
+    icon: <HeartHandshake size={28} />,
+    title: "Dedicated Support",
+    subtitle: "Astrologers & care team",
+    color: "text-[#FF6B8A]",
+    bg: "bg-rose-50"
+  },
+  {
+    icon: <Award size={28} />,
+    title: "Private Label Quality",
+    subtitle: "Strict quality checks",
+    color: "text-[#00B894]",
+    bg: "bg-emerald-50"
+  }
+];
 
 export function WhySmartPandit() {
-  const features = [
-    {
-      icon: <ShieldCheck size={28} className="text-warm-900" />,
-      title: "Lab Certified",
-      desc: "ISO lab certification",
-      bg: "bg-orange-100",
-    },
-    {
-      icon: <QrCode size={28} className="text-warm-900" />,
-      title: "Authenticity QR",
-      desc: "Scan to verify origin",
-      bg: "bg-blue-100",
-    },
-    {
-      icon: <Truck size={28} className="text-warm-900" />,
-      title: "Fast Shipping",
-      desc: "Secure doorstep delivery",
-      bg: "bg-emerald-100",
-    },
-    {
-      icon: <HeartHandshake size={28} className="text-warm-900" />,
-      title: "Dedicated Support",
-      desc: "Astrologers & care team",
-      bg: "bg-rose-100",
-    },
-    {
-      icon: <CheckCircle2 size={28} className="text-warm-900" />,
-      title: "Private Label Quality",
-      desc: "Strict quality checks",
-      bg: "bg-purple-100",
-    },
-  ];
-
   return (
-    <section className="section-shell">
-      <div className="section-wrap">
-        <div className="bg-gradient-to-br from-warm-100 to-white rounded-[2rem] p-6 md:p-10 border border-warm-200">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="font-heading text-2xl md:text-4xl font-bold text-warm-900 mb-2">
-              Why SanatanSetu?
-            </h2>
-            <p className="text-sm md:text-base text-warm-600">
-              India&apos;s most trusted spiritual destination.
-            </p>
-          </div>
+    <section className="py-8 md:py-10 bg-white px-4">
+      <div className="max-w-7xl mx-auto flex flex-col items-center">
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-            {features.map((item, index) => (
-              <div
-                key={index}
-                className={`flex flex-col items-center text-center ${index === 4 ? "col-span-2 md:col-span-1" : ""}`}
-              >
-                <div className={`size-16 rounded-full ${item.bg} flex items-center justify-center mb-4 text-warm-900 shadow-sm border border-warm-200`}>
-                  {item.icon}
-                </div>
-                <h3 className="font-semibold text-warm-900 text-sm mb-1">{item.title}</h3>
-                <p className="text-[11px] text-warm-500">{item.desc}</p>
-              </div>
-            ))}
-          </div>
+        <div className="text-center mb-6">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-[#1A1A1A] leading-tight mb-2">
+            Why SanatanSetu?
+          </h2>
+          <p className="text-[#888888] text-sm md:text-base font-medium">
+            India's most trusted spiritual destination
+          </p>
         </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-4 w-full justify-items-center">
+          {USPS.map((usp, idx) => (
+            <div key={idx} className={`flex flex-col items-center text-center ${idx === 4 ? "col-span-2 md:col-span-1" : ""}`}>
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${usp.bg} ${usp.color} border border-white shadow-[0_4px_16px_rgba(0,0,0,0.04)]`}>
+                {usp.icon}
+              </div>
+              <h3 className="font-bold text-[#1A1A1A] text-[15px] mb-1 leading-tight">
+                {usp.title}
+              </h3>
+              <p className="text-[12px] text-[#888888] max-w-[140px]">
+                {usp.subtitle}
+              </p>
+            </div>
+          ))}
+        </div>
+
       </div>
     </section>
   );

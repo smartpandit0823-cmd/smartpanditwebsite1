@@ -12,13 +12,18 @@ export async function createRazorpayOrder(
   receipt: string,
   notes?: Record<string, string>
 ) {
-  const order = await razorpay.orders.create({
-    amount: amount * 100,
-    currency,
-    receipt,
-    notes,
-  });
-  return { orderId: order.id, amount: order.amount };
+  try {
+    const order = await razorpay.orders.create({
+      amount: Math.round(amount * 100),
+      currency,
+      receipt,
+      notes,
+    });
+    return { orderId: order.id, amount: order.amount };
+  } catch (error: any) {
+    console.error("RAZORPAY ORDER ERROR:", JSON.stringify(error, null, 2));
+    throw new Error(error?.error?.description || "Razorpay Order Creation Failed");
+  }
 }
 
 export function verifyPaymentSignature(

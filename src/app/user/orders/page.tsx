@@ -16,30 +16,42 @@ import {
     CreditCard,
     ChevronRight,
     RefreshCw,
+    MapPin,
 } from "lucide-react";
 
-interface OrderItem {
+interface OrderItemDetail {
+    name: string;
+    price: number;
+    quantity: number;
+    image: string;
+}
+
+interface OrderData {
     id: string;
     totalAmount: number;
     status: string;
     paymentStatus: string;
+    items: OrderItemDetail[];
     itemCount: number;
+    shippingAddress: any;
+    trackingId: string | null;
     createdAt: string;
+    updatedAt: string;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; icon: typeof Clock; color: string; bg: string }> = {
-    created: { label: "Order Placed", icon: Clock, color: "text-yellow-600", bg: "bg-yellow-50" },
-    paid: { label: "Payment Done", icon: CreditCard, color: "text-blue-600", bg: "bg-blue-50" },
-    processing: { label: "Processing", icon: Package, color: "text-saffron-600", bg: "bg-saffron-50" },
-    shipped: { label: "Shipped", icon: Truck, color: "text-purple-600", bg: "bg-purple-50" },
-    delivered: { label: "Delivered", icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50" },
-    cancelled: { label: "Cancelled", icon: XCircle, color: "text-red-600", bg: "bg-red-50" },
+const STATUS_CONFIG: Record<string, { label: string; icon: typeof Clock; color: string; bg: string; border: string }> = {
+    created: { label: "Placed", icon: Clock, color: "text-yellow-600", bg: "bg-yellow-50", border: "border-yellow-200" },
+    paid: { label: "Confirmed", icon: CreditCard, color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200" },
+    processing: { label: "Processing", icon: Package, color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-200" },
+    shipped: { label: "Shipped", icon: Truck, color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-200" },
+    delivered: { label: "Delivered", icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200" },
+    cancelled: { label: "Cancelled", icon: XCircle, color: "text-red-600", bg: "bg-red-50", border: "border-red-200" },
 };
 
 export default function OrdersPage() {
     const { user, loading: authLoading } = useUser();
     const router = useRouter();
-    const [orders, setOrders] = useState<OrderItem[]>([]);
+    const [orders, setOrders] = useState<OrderData[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
@@ -70,32 +82,32 @@ export default function OrdersPage() {
         return (
             <div className="flex min-h-[60dvh] items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="size-8 animate-spin text-saffron-500" />
-                    <p className="text-sm text-warm-500">Loading orders...</p>
+                    <Loader2 className="size-8 animate-spin text-[#FF8C00]" />
+                    <p className="text-sm text-[#888888] font-medium">Loading orders...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="mx-auto max-w-lg px-4 pb-28 pt-20 md:pb-12 md:pt-24">
+        <div className="mx-auto max-w-2xl pb-12">
             {/* Header */}
             <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => router.back()}
-                        className="flex size-10 items-center justify-center rounded-full bg-white shadow-sm border border-warm-100 transition active:scale-95"
+                        className="flex size-10 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200 transition active:scale-95"
                     >
                         <ArrowLeft size={18} />
                     </button>
                     <div>
-                        <h1 className="font-serif text-xl font-bold text-warm-900">My Orders</h1>
-                        <p className="text-xs text-warm-500">{orders.length} order{orders.length !== 1 ? "s" : ""}</p>
+                        <h1 className="font-heading text-2xl font-bold text-[#1A1A1A]">My Orders</h1>
+                        <p className="text-xs text-[#888888] font-medium">{orders.length} order{orders.length !== 1 ? "s" : ""} placed</p>
                     </div>
                 </div>
                 <button
                     onClick={fetchOrders}
-                    className="flex size-9 items-center justify-center rounded-full bg-saffron-50 text-saffron-600 transition active:scale-90"
+                    className="flex size-10 items-center justify-center rounded-full bg-orange-50 text-[#FF8C00] transition active:scale-90 border border-orange-100"
                     aria-label="Refresh"
                 >
                     <RefreshCw size={16} />
@@ -103,38 +115,36 @@ export default function OrdersPage() {
             </div>
 
             {error ? (
-                /* ── Error State ── */
                 <div className="flex flex-col items-center py-16 text-center">
-                    <XCircle className="mb-3 text-red-300" size={40} />
-                    <p className="text-sm text-warm-600">Unable to load orders</p>
+                    <XCircle className="mb-3 text-red-300" size={48} />
+                    <p className="text-base font-bold text-[#1A1A1A]">Unable to load orders</p>
+                    <p className="text-sm text-[#888888] mt-1">Please check your connection and try again</p>
                     <button
                         onClick={fetchOrders}
-                        className="mt-3 rounded-xl bg-saffron-500 px-5 py-2.5 text-sm font-bold text-white transition active:scale-95"
+                        className="mt-4 rounded-xl bg-[#FF8C00] px-6 py-3 text-sm font-bold text-white transition active:scale-95 shadow-md"
                     >
                         Try Again
                     </button>
                 </div>
             ) : orders.length === 0 ? (
-                /* ── Empty State ── */
                 <div className="flex flex-col items-center py-16 text-center">
-                    <div className="mb-4 flex size-20 items-center justify-center rounded-full bg-saffron-50">
-                        <ShoppingBag className="text-saffron-300" size={36} />
+                    <div className="mb-4 flex size-24 items-center justify-center rounded-full bg-orange-50 border border-orange-100">
+                        <ShoppingBag className="text-[#FF8C00]" size={40} />
                     </div>
-                    <h2 className="font-serif text-lg font-semibold text-warm-800">No orders yet</h2>
-                    <p className="mt-1 max-w-[240px] text-sm text-warm-500">
+                    <h2 className="font-heading text-xl font-bold text-[#1A1A1A]">No orders yet</h2>
+                    <p className="mt-2 max-w-[280px] text-sm text-[#888888] font-medium leading-relaxed">
                         Shop from our sacred collection and your orders will appear here
                     </p>
                     <Link
-                        href="/store"
-                        className="mt-6 flex items-center gap-2 rounded-xl bg-linear-to-r from-saffron-500 to-saffron-600 px-6 py-3 text-sm font-bold text-white shadow-lg transition active:scale-95"
+                        href="/shop"
+                        className="mt-6 flex items-center gap-2 rounded-full bg-[#FF8C00] px-8 py-3.5 text-base font-bold text-white shadow-md hover:bg-[#E67E00] transition active:scale-95"
                     >
-                        <ShoppingBag size={16} />
+                        <ShoppingBag size={18} />
                         Visit Store
                     </Link>
                 </div>
             ) : (
-                /* ── Orders List ── */
-                <div className="space-y-3">
+                <div className="space-y-4">
                     {orders.map((order) => {
                         const config = STATUS_CONFIG[order.status] || STATUS_CONFIG.created;
                         const StatusIcon = config.icon;
@@ -146,55 +156,77 @@ export default function OrdersPage() {
                         });
 
                         return (
-                            <div
+                            <Link
                                 key={order.id}
-                                className="rounded-2xl border border-gold-200/60 bg-white p-4 shadow-sm transition-all hover:shadow-md active:scale-[0.99]"
+                                href={`/user/orders/${order.id}`}
+                                className="block rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all active:scale-[0.99] overflow-hidden"
                             >
-                                {/* Top Row */}
-                                <div className="flex items-start justify-between">
-                                    <div>
-                                        <p className="text-[10px] font-medium text-warm-400">ORDER #{order.id.slice(-8).toUpperCase()}</p>
-                                        <p className="mt-0.5 text-[11px] text-warm-500">{dateStr}</p>
-                                    </div>
-                                    <div className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 ${config.bg}`}>
-                                        <StatusIcon size={12} className={config.color} />
-                                        <span className={`text-[10px] font-semibold ${config.color}`}>{config.label}</span>
-                                    </div>
-                                </div>
-
-                                {/* Details */}
-                                <div className="mt-3 flex items-center justify-between">
+                                {/* Status Bar */}
+                                <div className={`flex items-center justify-between px-5 py-2.5 ${config.bg} border-b ${config.border}`}>
                                     <div className="flex items-center gap-2">
-                                        <div className="flex size-10 items-center justify-center rounded-xl bg-saffron-50">
-                                            <Package size={18} className="text-saffron-500" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-semibold text-warm-900">
-                                                {order.itemCount} {order.itemCount === 1 ? "item" : "items"}
-                                            </p>
-                                            <p className="text-xs text-warm-500">
-                                                ₹{order.totalAmount.toLocaleString("en-IN")}
-                                            </p>
-                                        </div>
+                                        <StatusIcon size={14} className={config.color} />
+                                        <span className={`text-xs font-bold ${config.color}`}>{config.label}</span>
                                     </div>
-                                    <div className="flex items-center gap-1 text-saffron-600">
-                                        <span className="text-xs font-semibold">Details</span>
-                                        <ChevronRight size={14} />
-                                    </div>
+                                    <span className="text-[10px] font-bold text-[#888888] uppercase tracking-wider">{dateStr}</span>
                                 </div>
 
-                                {/* Payment status */}
-                                <div className="mt-2 flex items-center gap-2">
-                                    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${order.paymentStatus === "paid"
-                                            ? "bg-green-50 text-green-600"
-                                            : order.paymentStatus === "refunded"
-                                                ? "bg-purple-50 text-purple-600"
-                                                : "bg-yellow-50 text-yellow-600"
-                                        }`}>
-                                        {order.paymentStatus === "paid" ? "✓ Paid" : order.paymentStatus === "refunded" ? "↩ Refunded" : "⏳ Pending"}
-                                    </span>
+                                {/* Content */}
+                                <div className="p-5">
+                                    {/* Products Preview */}
+                                    <div className="flex gap-3 mb-4">
+                                        {order.items.slice(0, 3).map((item, idx) => (
+                                            <div key={idx} className="w-16 h-16 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
+                                                {item.image ? (
+                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center">
+                                                        <Package size={20} className="text-gray-300" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                        {order.items.length > 3 && (
+                                            <div className="w-16 h-16 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
+                                                <span className="text-xs font-bold text-[#888888]">+{order.items.length - 3}</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Items List */}
+                                    <div className="space-y-1 mb-4">
+                                        {order.items.slice(0, 2).map((item, idx) => (
+                                            <p key={idx} className="text-sm font-semibold text-[#1A1A1A] truncate">
+                                                {item.name} <span className="text-[#888888] font-medium">× {item.quantity}</span>
+                                            </p>
+                                        ))}
+                                        {order.items.length > 2 && (
+                                            <p className="text-xs text-[#888888] font-medium">+{order.items.length - 2} more items</p>
+                                        )}
+                                    </div>
+
+                                    {/* Footer */}
+                                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                                        <div className="flex items-center gap-4">
+                                            <div>
+                                                <p className="text-[10px] font-bold text-[#888888] uppercase tracking-wider">Total</p>
+                                                <p className="text-lg font-bold text-[#1A1A1A]">₹{order.totalAmount.toLocaleString("en-IN")}</p>
+                                            </div>
+                                            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold ${order.paymentStatus === "paid"
+                                                ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                                                : order.paymentStatus === "refunded"
+                                                    ? "bg-purple-50 text-purple-600 border border-purple-100"
+                                                    : "bg-yellow-50 text-yellow-600 border border-yellow-100"
+                                                }`}>
+                                                {order.paymentStatus === "paid" ? "✓ Paid" : order.paymentStatus === "refunded" ? "↩ Refunded" : "COD"}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-1 text-[#FF8C00]">
+                                            <span className="text-xs font-bold">View Details</span>
+                                            <ChevronRight size={16} />
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </Link>
                         );
                     })}
                 </div>

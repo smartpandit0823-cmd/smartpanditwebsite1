@@ -49,7 +49,7 @@ export function StoreCTASection() {
 
                         <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                             <Link
-                                href="/store"
+                                href="/shop"
                                 className="flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-saffron-700 shadow-xl transition-all active:scale-95 hover:shadow-2xl hover:-translate-y-0.5 group"
                             >
                                 <ShoppingBag size={16} />

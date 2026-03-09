@@ -21,8 +21,8 @@ export default async function ProductsPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading text-3xl font-bold text-warm-900">Products</h1>
-        <p className="mt-1 text-gray-600">Manage your spiritual product catalog</p>
+        <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>Products</h1>
+        <p className="mt-1 text-sm text-gray-500">Manage your product catalog</p>
       </div>
       <ProductListTable data={serialized} total={result.total} page={result.page} totalPages={result.totalPages} />
     </div>

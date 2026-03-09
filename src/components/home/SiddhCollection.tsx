@@ -1,145 +1,109 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
-import { Star, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { Crown } from "lucide-react";
+import { ProductCardProps } from "../ui/ProductCard";
 
-interface Product {
-    id: string;
-    slug: string;
-    name: string;
-    images: string[];
-    price: number;
-    originalPrice?: number;
-    rating: number;
+interface SiddhCollectionProps {
+    products?: ProductCardProps["product"][];
 }
 
-export function SiddhCollection({ products }: { products: Product[] }) {
-    const scrollRef = useRef<HTMLDivElement>(null);
+const MOCK_SIDDH_PRODUCTS = [
+    {
+        id: "s1",
+        slug: "one-mukhi-rudraksha",
+        name: "1 Mukhi Certified Rudraksha",
+        image: "https://images.unsplash.com/photo-1601314167099-24b553556066?auto=format&fit=crop&q=80",
+        sellingPrice: 12500,
+        rating: 4.9,
+        reviewCount: 42,
+        inStock: true
+    },
+    {
+        id: "s2",
+        slug: "blue-sapphire-neelam",
+        name: "Blue Sapphire (Neelam) 5 Ratti",
+        image: "https://images.unsplash.com/photo-1611005202685-6f9202029be8?auto=format&fit=crop&q=80",
+        sellingPrice: 24000,
+        rating: 4.8,
+        reviewCount: 29,
+        inStock: true
+    },
+    {
+        id: "s3",
+        slug: "sphatik-shivling",
+        name: "Original Sphatik Shivling",
+        image: "https://images.unsplash.com/photo-1596707328639-50c6fb0e0926?auto=format&fit=crop&q=80",
+        sellingPrice: 8500,
+        rating: 5.0,
+        reviewCount: 88,
+        inStock: true
+    },
+    {
+        id: "s4",
+        slug: "gauri-shankar-rudraksha",
+        name: "Gauri Shankar Rudraksha",
+        image: "https://images.unsplash.com/photo-1601314167099-24b553556066?auto=format&fit=crop&q=80",
+        sellingPrice: 11200,
+        rating: 4.9,
+        reviewCount: 51,
+        inStock: true
+    }
+];
 
-    const scroll = (dir: 1 | -1) => {
-        scrollRef.current?.scrollBy({ left: dir * 220, behavior: "smooth" });
-    };
-
-    if (products.length === 0) return null;
+export function SiddhCollection({ products = MOCK_SIDDH_PRODUCTS }: SiddhCollectionProps) {
+    const displayProducts = products && products.length > 0 ? products : MOCK_SIDDH_PRODUCTS;
 
     return (
-        <section className="section-premium-dark py-14 md:py-20 relative overflow-hidden">
-            {/* Subtle gold corner accents */}
-            <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-gold-600/10 to-transparent pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-gold-600/10 to-transparent pointer-events-none" />
-
-            <div className="section-wrap px-4">
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center gap-2 mb-3">
-                        <Sparkles size={16} className="text-gold-400" />
-                        <span className="text-[11px] font-semibold tracking-widest uppercase text-gold-400">
-                            Premium Collection
-                        </span>
-                        <Sparkles size={16} className="text-gold-400" />
+        <section className="py-8 md:py-12 bg-[#0F0F0F] px-4 -mx-4 md:mx-0 overflow-hidden relative">
+            <div className="max-w-7xl mx-auto relative z-10">
+                <div className="flex flex-col items-center md:items-start text-center md:text-left mb-6">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#FFD700]/20 text-[#FFD700] border border-[#FFD700]/30 rounded-full text-xs font-bold uppercase tracking-widest mb-4 shadow-[0_0_15px_rgba(255,215,0,0.15)]">
+                        <Crown size={14} className="animate-pulse" />
+                        SIDDH COLLECTION
                     </div>
-                    <h2 className="font-heading text-2xl md:text-3xl font-bold animate-golden-shimmer inline-block">
-                        Siddh Collection
+                    <h2 className="text-3xl md:text-5xl font-heading font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FFF8E7] via-[#FFD700] to-[#D4AF37] leading-[1.2] mb-3 drop-shadow-lg">
+                        Rare & Powerful.<br className="hidden md:block" /> Curated for Serious Seekers.
                     </h2>
-                    <p className="text-sm text-neutral-400 mt-2 max-w-md mx-auto">
-                        Energized By Expert Pandits · Certified Authentic
+                    <p className="text-[#888888] text-sm md:text-lg font-medium max-w-2xl">
+                        Exclusive, high-value spiritual items energised, lab-verified, and individually handpicked by our master astrologers.
                     </p>
-                    {/* Gold divider */}
-                    <div className="mt-4 mx-auto w-24 h-px bg-gradient-to-r from-transparent via-gold-500/60 to-transparent" />
                 </div>
 
-                {/* Products Slider */}
-                <div className="relative">
-                    <div
-                        ref={scrollRef}
-                        className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth -mx-4 px-4"
-                    >
-                        {products.map((product) => (
-                            <Link
-                                key={product.id}
-                                href={`/store/${product.slug}`}
-                                className="group flex-shrink-0 w-[160px] md:w-[200px]"
-                            >
-                                {/* Card */}
-                                <div className="relative rounded-2xl overflow-hidden border border-gold-700/30 bg-gradient-to-b from-neutral-800 to-neutral-900 hover:border-gold-500/50 transition-all duration-300">
-                                    {/* Image */}
-                                    <div className="aspect-square overflow-hidden bg-neutral-800">
-                                        {product.images[0] ? (
-                                            <img
-                                                src={product.images[0]}
-                                                alt={product.name}
-                                                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-90 group-hover:opacity-100"
-                                                loading="lazy"
-                                            />
-                                        ) : (
-                                            <div className="h-full w-full flex items-center justify-center text-3xl">
-                                                ✨
-                                            </div>
-                                        )}
-                                        {/* Gold shimmer on hover */}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                                    </div>
+                {/* Horizontal scroll on mobile, 4-col desktop */}
+                <div className="flex overflow-x-auto gap-4 md:grid md:grid-cols-4 md:gap-6 pb-6 no-scrollbar snap-x snap-mandatory px-1 py-4">
+                    {displayProducts.slice(0, 4).map((product) => (
+                        <div key={product.id} className="snap-start shrink-0 w-[240px] md:w-auto flex flex-col group bg-[#1A1A1A] border border-[#333333] hover:border-[#FFD700]/50 rounded-2xl p-4 transition-all hover:shadow-[0_8px_32px_rgba(255,215,0,0.1)]">
 
-                                    {/* Info */}
-                                    <div className="p-3">
-                                        <h3 className="text-xs font-semibold text-neutral-200 line-clamp-2 mb-2 group-hover:text-gold-300 transition-colors">
-                                            {product.name}
-                                        </h3>
-                                        <div className="flex items-center gap-1 mb-1.5">
-                                            {[...Array(5)].map((_, i) => (
-                                                <Star
-                                                    key={i}
-                                                    size={9}
-                                                    className={i < Math.round(product.rating) ? "fill-gold-500 text-gold-500" : "text-neutral-600"}
-                                                />
-                                            ))}
-                                        </div>
-                                        <div className="flex items-baseline gap-1.5">
-                                            <span className="text-sm font-bold text-gold-400">
-                                                ₹{product.price.toLocaleString()}
-                                            </span>
-                                            {product.originalPrice && (
-                                                <span className="text-[10px] text-neutral-500 line-through">
-                                                    ₹{product.originalPrice.toLocaleString()}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Premium badge */}
-                                    <div className="absolute top-2 left-2 bg-gradient-to-r from-gold-600 to-gold-500 text-[9px] font-bold text-black px-2 py-0.5 rounded-full">
-                                        SIDDH
-                                    </div>
+                            <div className="bg-white rounded-xl aspect-[4/3] w-full p-4 mb-5 shadow-inner flex items-center justify-center relative overflow-hidden group-hover:scale-[1.02] transition-transform duration-300">
+                                <img
+                                    src={product.image}
+                                    alt={product.name}
+                                    className="w-full h-full object-contain filter drop-shadow-xl"
+                                />
+                                <div className="absolute top-2 left-2 px-2 py-1 bg-gradient-to-r from-[#D4AF37] to-[#aa860a] text-white text-[9px] font-bold uppercase rounded shadow-sm">
+                                    Expert Certified
                                 </div>
-                            </Link>
-                        ))}
-                    </div>
+                            </div>
 
-                    {/* Desktop nav arrows */}
-                    <button
-                        onClick={() => scroll(-1)}
-                        className="absolute -left-3 top-1/2 -translate-y-1/2 hidden md:flex size-10 rounded-full bg-neutral-800 border border-gold-700/30 items-center justify-center text-gold-400 hover:bg-neutral-700 transition"
-                    >
-                        <ChevronLeft size={18} />
-                    </button>
-                    <button
-                        onClick={() => scroll(1)}
-                        className="absolute -right-3 top-1/2 -translate-y-1/2 hidden md:flex size-10 rounded-full bg-neutral-800 border border-gold-700/30 items-center justify-center text-gold-400 hover:bg-neutral-700 transition"
-                    >
-                        <ChevronRight size={18} />
-                    </button>
-                </div>
+                            <div className="flex flex-col flex-1">
+                                <h3 className="font-bold text-white text-base leading-tight mb-2 line-clamp-2">
+                                    {product.name}
+                                </h3>
+                                <div className="flex items-center gap-1.5 mb-4">
+                                    <span className="text-[#FFD700] font-bold text-lg">₹{product.sellingPrice.toLocaleString('en-IN')}</span>
+                                    <span className="text-[10px] text-[#888888] uppercase tracking-wider bg-[#333] px-1.5 py-0.5 rounded">Consult First</span>
+                                </div>
 
-                {/* View All */}
-                <div className="text-center mt-8">
-                    <Link
-                        href="/store?collection=siddh"
-                        className="inline-flex items-center gap-2 text-sm font-semibold text-gold-400 border border-gold-600/30 rounded-full px-6 py-2.5 hover:bg-gold-500/10 transition-colors"
-                    >
-                        Explore Full Collection
-                        <ChevronRight size={14} />
-                    </Link>
+                                <Link
+                                    href={`/product/${product.slug}`}
+                                    className="w-full mt-auto py-3 px-4 rounded-xl border border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-[#1A1A1A] font-bold text-sm text-center shadow-[0_0_10px_rgba(255,215,0,0.1)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)] transition-all flex items-center justify-center gap-2 group-hover:translate-x-0"
+                                >
+                                    View Details <span className="text-lg leading-none transform group-hover:translate-x-1 transition-transform">→</span>
+                                </Link>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </section>

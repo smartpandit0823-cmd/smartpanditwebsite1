@@ -8,33 +8,30 @@ export default async function ProductEditPage({ params }: { params: Promise<{ id
   await auth();
   const { id } = await params;
   await connectDB();
-  const product = await Product.findById(id).lean();
+  const product = await Product.findById(id).lean() as any;
   if (!product) notFound();
 
+  // Map full database object explicitly providing defaults for missing fields to avoid undefined crashes in ProductForm
   const data = JSON.parse(JSON.stringify({
+    ...product,
     _id: product._id.toString(),
-    name: product.name,
-    slug: product.slug,
-    shortDescription: product.shortDescription,
-    fullDescription: product.fullDescription,
-    category: product.category,
-    brand: product.brand,
-    tags: product.tags || [],
-    mainImage: product.mainImage,
-    images: product.images || [],
-    video: product.video,
-    pricing: product.pricing || { sellingPrice: 0, mrp: 0, discount: 0, gst: 0 },
-    inventory: product.inventory || { stock: 0, sku: "", inStock: true, lowStockThreshold: 5 },
+    pricing: product.pricing || { sellingPrice: product.sellingPrice || 0, mrp: product.mrp || 0, discount: product.discountPercentage || 0, gst: product.gstPercentage || 0, costPrice: product.costPrice || 0, offerTag: product.offerTag || "" },
+    inventory: product.inventory || { stock: product.stockQuantity || 0, sku: product.sku || "", inStock: true, lowStockThreshold: product.lowStockAlert || 5, weight: product.weight || "", codAvailable: product.codAvailable ?? true, returnAllowed: product.returnAllowed ?? false },
     shipping: product.shipping || { deliveryCharge: 0, freeShipping: false, deliveryDays: 7 },
     seo: product.seo || { seoTitle: "", metaDescription: "", keywords: [] },
-    status: product.status,
-    featured: product.featured,
-    trending: product.trending,
-    showOnHome: product.showOnHome,
-    spiritualBenefits: product.spiritualBenefits,
-    howToUse: product.howToUse,
-    authenticityCertificate: product.authenticityCertificate,
-    panditRecommended: product.panditRecommended,
+    visibility: product.visibility || { showInBestSellers: product.featured || false, showInTrending: product.trending || false, showInCombos: false, showInZodiac: false, showInSiddh: false, showInFeaturedRudraksha: false, showInVastu: false, showInPyramids: false, showOnHome: product.showOnHome || false },
+    purposeTags: product.purposeTags || [],
+    zodiacSigns: product.zodiacSigns || [],
+    benefits: product.benefits || [],
+    shortTitle: product.shortTitle || "",
+    subCategory: product.subCategory || "",
+    brand: product.brand || "",
+    certificationImage: product.certificationImage || "",
+    sizeChart: product.sizeChart || "",
+    careInstructions: product.careInstructions || "",
+    status: product.status || "draft",
+    tags: product.tags || [],
+    images: product.images || product.galleryImages || [],
   }));
 
   return (

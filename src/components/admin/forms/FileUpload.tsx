@@ -6,7 +6,7 @@ import { Upload, X, Loader2 } from "lucide-react";
 interface FileUploadProps {
   value?: string | string[];
   onChange: (url: string | string[]) => void;
-  folder?: "pujas" | "products" | "pandits" | "blogs" | "banners" | "offers" | "sliders" | "testimonials" | "misc";
+  folder?: "pujas" | "products" | "pandits" | "blogs" | "banners" | "offers" | "sliders" | "testimonials" | "combos" | "misc";
   multiple?: boolean;
   accept?: string;
   maxSize?: number;

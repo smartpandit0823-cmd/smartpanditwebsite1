@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
         await connectDB();
 
         // Find by googleId first, then by email
-        let user = await User.findOne({ $or: [{ googleId }, { email }] });
+        const user = await User.findOne({ $or: [{ googleId }, { email }] });
 
         if (!user) {
             // New user from Google, we need their phone number to proceed

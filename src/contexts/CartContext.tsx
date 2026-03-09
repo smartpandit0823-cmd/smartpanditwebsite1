@@ -17,6 +17,7 @@ export interface CartItem {
     quantity: number;
     subtotal: number;
     inStock: boolean;
+    codAvailable: boolean;
 }
 
 interface CartContextType {

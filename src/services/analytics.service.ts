@@ -7,11 +7,15 @@ import Product from "@/models/Product";
 import Review from "@/models/Review";
 import User from "@/models/User";
 import AnalyticsEvent from "@/models/AnalyticsEvent";
+import Customer from "@/models/Customer";
 
 // ──────── Dashboard Stats (Enhanced) ────────
 
 export interface DashboardStats {
   totalUsers: number;
+  totalCustomers: number;
+  totalRealOrders: number;
+  pendingAstroRequests: number;
   totalVisitors: number;
   totalBookings: number;
   pujaRevenue: number;
@@ -49,6 +53,9 @@ export async function getDashboardStats(period: "7d" | "30d" = "7d"): Promise<Da
 
   const [
     totalUsers,
+    totalCustomers,
+    totalRealOrders,
+    pendingAstroRequests,
     totalBookings,
     todayBookings,
     pendingAssignments,
@@ -66,6 +73,12 @@ export async function getDashboardStats(period: "7d" | "30d" = "7d"): Promise<Da
   ] = await Promise.all([
     // Total users
     User.countDocuments(),
+    // Total customers (registered store customers)
+    Customer.countDocuments().catch(() => 0),
+    // Total real orders from Order model
+    Order.countDocuments().catch(() => 0),
+    // Pending astrology requests
+    AstrologyRequest.countDocuments({ status: "requested" }).catch(() => 0),
     // Total bookings
     Booking.countDocuments({ status: { $nin: ["cancelled"] }, amountPaid: { $gt: 0 } }),
     // Today bookings
@@ -172,45 +185,45 @@ export async function getDashboardStats(period: "7d" | "30d" = "7d"): Promise<Da
     revenueByDayMap[key] = { puja: 0, store: 0, astrology: 0 };
   }
 
-  // Puja revenue by day (net of payouts)
-  const pujaByDay = await Booking.aggregate([
-    { $match: { status: { $nin: ["cancelled"] }, amountPaid: { $gt: 0 }, createdAt: { $gte: startDate } } },
-    { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, amount: { $sum: { $subtract: ["$amountPaid", { $ifNull: ["$panditPayoutAmount", 0] }] } } } },
-  ]).catch(() => []);
-  for (const r of pujaByDay) {
-    if (revenueByDayMap[r._id]) revenueByDayMap[r._id].puja = r.amount;
-  }
-
-  // Store revenue by day
-  const storeByDay = await Order.aggregate([
-    { $match: { paymentStatus: "paid", createdAt: { $gte: startDate } } },
-    { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, amount: { $sum: "$totalAmount" } } },
-  ]).catch(() => []);
-  for (const r of storeByDay) {
-    if (revenueByDayMap[r._id]) revenueByDayMap[r._id].store = r.amount;
-  }
-
-  // Astrology revenue by day
-  const astroByDay = await AstrologyRequest.aggregate([
-    { $match: { paymentStatus: "paid", createdAt: { $gte: startDate } } },
-    { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, amount: { $sum: "$amount" } } },
-  ]).catch(() => []);
-  for (const r of astroByDay) {
-    if (revenueByDayMap[r._id]) revenueByDayMap[r._id].astrology = r.amount;
-  }
-
-  const revenueByDay = Object.entries(revenueByDayMap).map(([date, val]) => ({ date, ...val }));
-
-  const conversionRate = totalVisitors > 0 ? (totalBookings / totalVisitors) * 100 : 0;
-
-  // Advance payment stats (only where payment was received)
-  const [advanceStatsArr, fullPaymentBookings] = await Promise.all([
+  // ── Secondary aggregations (run in parallel) ──
+  const [pujaByDay, storeByDay, astroByDay, advanceStatsArr, fullPaymentBookings] = await Promise.all([
+    // Puja revenue by day (net of payouts)
+    Booking.aggregate([
+      { $match: { status: { $nin: ["cancelled"] }, amountPaid: { $gt: 0 }, createdAt: { $gte: startDate } } },
+      { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, amount: { $sum: { $subtract: ["$amountPaid", { $ifNull: ["$panditPayoutAmount", 0] }] } } } },
+    ]).catch(() => []),
+    // Store revenue by day
+    Order.aggregate([
+      { $match: { paymentStatus: "paid", createdAt: { $gte: startDate } } },
+      { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, amount: { $sum: "$totalAmount" } } },
+    ]).catch(() => []),
+    // Astrology revenue by day
+    AstrologyRequest.aggregate([
+      { $match: { paymentStatus: "paid", createdAt: { $gte: startDate } } },
+      { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, amount: { $sum: "$amount" } } },
+    ]).catch(() => []),
+    // Advance payment stats
     Booking.aggregate([
       { $match: { paymentType: "advance", status: { $nin: ["cancelled"] }, amountPaid: { $gt: 0 } } },
       { $group: { _id: null, totalPaid: { $sum: "$amountPaid" }, totalAmount: { $sum: "$amount" }, count: { $sum: 1 } } },
     ]).catch(() => []),
+    // Full payment count
     Booking.countDocuments({ paymentType: { $ne: "advance" }, status: { $nin: ["cancelled"] }, amountPaid: { $gt: 0 } }).catch(() => 0),
   ]);
+
+  for (const r of pujaByDay as { _id: string; amount: number }[]) {
+    if (revenueByDayMap[r._id]) revenueByDayMap[r._id].puja = r.amount;
+  }
+  for (const r of storeByDay as { _id: string; amount: number }[]) {
+    if (revenueByDayMap[r._id]) revenueByDayMap[r._id].store = r.amount;
+  }
+  for (const r of astroByDay as { _id: string; amount: number }[]) {
+    if (revenueByDayMap[r._id]) revenueByDayMap[r._id].astrology = r.amount;
+  }
+
+  const revenueByDay = Object.entries(revenueByDayMap).map(([date, val]) => ({ date, ...val }));
+  const conversionRate = totalVisitors > 0 ? (totalBookings / totalVisitors) * 100 : 0;
+
   const advanceStats = advanceStatsArr as { totalPaid: number; totalAmount: number; count: number }[];
   const totalAdvanceCollected = advanceStats[0]?.totalPaid || 0;
   const totalPendingCollection = (advanceStats[0]?.totalAmount || 0) - totalAdvanceCollected;
@@ -218,6 +231,9 @@ export async function getDashboardStats(period: "7d" | "30d" = "7d"): Promise<Da
 
   return {
     totalUsers,
+    totalCustomers,
+    totalRealOrders,
+    pendingAstroRequests,
     totalVisitors,
     totalBookings,
     pujaRevenue,

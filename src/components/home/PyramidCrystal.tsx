@@ -1,99 +1,98 @@
-"use client";
-
 import Link from "next/link";
-import { Zap, ChevronRight } from "lucide-react";
+import { Sparkles, Diamond, ShieldPlus, Brain } from "lucide-react";
+import { ProductCardProps } from "../ui/ProductCard";
 
-const AMPLIFIERS = [
-    {
-        id: "p1",
-        name: "Copper Pyramids",
-        benefit: "Vastu Correction",
-        icon: "🔺",
-        color: "from-orange-100 to-amber-50",
-        textHover: "group-hover:text-orange-700"
-    },
-    {
-        id: "p2",
-        name: "Crystal Spheres",
-        benefit: "Focus & Clarity",
-        icon: "🔮",
-        color: "from-blue-100 to-indigo-50",
-        textHover: "group-hover:text-blue-700"
-    },
-    {
-        id: "p3",
-        name: "Amethyst Clusters",
-        benefit: "Stress Relief",
-        icon: "💜",
-        color: "from-purple-100 to-fuchsia-50",
-        textHover: "group-hover:text-purple-700"
-    },
-    {
-        id: "p4",
-        name: "Orgone Generators",
-        benefit: "EMF Protection",
-        icon: "✨",
-        color: "from-emerald-100 to-teal-50",
-        textHover: "group-hover:text-emerald-700"
-    }
-];
+export function PyramidCrystal({ products }: { products?: ProductCardProps['product'][] }) {
+    const defaultAmplifiers = [
+        {
+            title: "Copper Pyramids",
+            subtitle: "Vastu Correction",
+            icon: <span>🔺</span>,
+            image: "https://images.unsplash.com/photo-1596707328639-50c6fb0e0926?auto=format&fit=crop&q=80",
+            slug: "copper-pyramids"
+        },
+        {
+            title: "Crystal Spheres",
+            subtitle: "Focus & Clarity",
+            icon: <span>🔮</span>,
+            image: "https://images.unsplash.com/photo-1601314167099-24b553556066?auto=format&fit=crop&q=80",
+            slug: "crystal-spheres"
+        },
+        {
+            title: "Amethyst Clusters",
+            subtitle: "Stress Relief",
+            icon: <span>💜</span>,
+            image: "https://images.unsplash.com/photo-1611005202685-6f9202029be8?auto=format&fit=crop&q=80",
+            slug: "amethyst-clusters"
+        },
+        {
+            title: "Orgone Generators",
+            subtitle: "EMF Protection",
+            icon: <span>✨</span>,
+            image: "https://images.unsplash.com/photo-1599643477873-10eb0cf37e6f?auto=format&fit=crop&q=80",
+            slug: "orgone-generators"
+        }
+    ];
 
-export function PyramidCrystal() {
+    const displayItems = products && products.length > 0 ? products : defaultAmplifiers;
+
+    const item1 = displayItems[0];
+    const item2 = displayItems[1] || defaultAmplifiers[1];
+    const item3 = displayItems[2] || defaultAmplifiers[2];
+    const item4 = displayItems[3] || defaultAmplifiers[3];
+    const itemsToMap = [item1, item2, item3, item4].filter(Boolean);
+
     return (
-        <section className="section-shell bg-warm-50/50">
-            <div className="section-wrap">
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-8">
-                    <div className="max-w-xl">
-                        <div className="inline-flex items-center gap-2 mb-2">
-                            <Zap size={16} className="text-purple-600" />
-                            <span className="text-[11px] font-bold text-purple-600 tracking-wider uppercase">
-                                High Vibe Tools
-                            </span>
-                        </div>
-                        <h2 className="font-heading text-2xl md:text-3xl font-bold text-warm-900 mb-2">
-                            Energy Amplifiers
-                        </h2>
-                        <p className="text-sm text-warm-600">
-                            Clear negativity and manifest your goals faster with our ethically sourced crystals and Vedic pyramids.
-                        </p>
+        <section className="py-8 md:py-10 px-4 bg-white">
+            <div className="max-w-4xl mx-auto flex flex-col items-center">
+
+                <div className="text-center mb-6">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#8B5CF6]/10 text-[#8B5CF6] rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+                        <Sparkles size={14} />
+                        ENERGY AMPLIFIERS
                     </div>
-                    <Link
-                        href="/store?category=pyramids-crystals"
-                        className="hidden md:inline-flex items-center gap-2 text-sm font-semibold text-purple-700 bg-purple-100/50 px-4 py-2 rounded-full hover:bg-purple-100 transition-colors"
-                    >
-                        Explore All <ChevronRight size={16} />
-                    </Link>
+                    <p className="text-[#888888] text-sm md:text-base font-medium max-w-md mx-auto">
+                        Clear negativity and manifest your goals faster with our high-vibration spiritual tools.
+                    </p>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                    {AMPLIFIERS.map((item) => (
+                {/* 2x2 Grid */}
+                <div className="grid grid-cols-2 gap-4 w-full mb-10">
+                    {itemsToMap.map((amp, idx) => (
                         <Link
-                            key={item.id}
-                            href={`/store?item=${item.id}`}
-                            className={`group flex flex-col p-5 rounded-2xl bg-gradient-to-br ${item.color} border border-white shadow-sm hover:shadow-md transition-all hover:-translate-y-1`}
+                            key={idx}
+                            href={`/product/${amp.slug}`}
+                            className="group relative h-[150px] md:h-[180px] rounded-2xl overflow-hidden shadow-sm hover:shadow-[0_8px_24px_rgba(139,92,246,0.12)] transition-shadow border border-purple-50 flex flex-col justify-end p-4 md:p-5"
                         >
-                            <div className="text-4xl mb-3 drop-shadow-sm group-hover:scale-110 transition-transform origin-bottom">
-                                {item.icon}
+                            <img
+                                src={'image' in amp ? amp.image : (amp as any).img}
+                                alt={'name' in amp ? amp.name : (amp as any).title}
+                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+
+                            <div className="relative z-10">
+                                <div className="mb-2 text-2xl filter drop-shadow">
+                                    {(amp as any).icon || <span>✨</span>}
+                                </div>
+                                <h3 className="font-bold text-white text-sm md:text-lg leading-tight mb-0.5 drop-shadow-md">
+                                    {'name' in amp ? amp.name : (amp as any).title}
+                                </h3>
+                                <p className="text-[11px] md:text-xs text-[#E9D5FF] font-medium drop-shadow">
+                                    {'subtitle' in amp ? (amp as any).subtitle : "Energy Amplifier"}
+                                </p>
                             </div>
-                            <h3 className={`font-bold text-warm-900 text-sm md:text-base mb-1 transition-colors ${item.textHover}`}>
-                                {item.name}
-                            </h3>
-                            <p className="text-[11px] md:text-xs font-semibold text-warm-600 opacity-80">
-                                {item.benefit}
-                            </p>
                         </Link>
                     ))}
                 </div>
 
-                {/* Mobile View All Button */}
-                <div className="mt-6 text-center md:hidden">
-                    <Link
-                        href="/store?category=pyramids-crystals"
-                        className="inline-flex items-center gap-2 text-xs font-semibold text-purple-700 bg-purple-50 border border-purple-100 px-5 py-2.5 rounded-full"
-                    >
-                        Explore All <ChevronRight size={14} />
-                    </Link>
-                </div>
+                <Link
+                    href="/shop?category=energy-amplifiers"
+                    className="border-2 border-[#1A1A1A] text-[#1A1A1A] px-8 py-3.5 rounded-full font-bold text-sm hover:bg-[#1A1A1A] hover:text-white transition-colors tracking-wide"
+                >
+                    Explore All Amplifiers →
+                </Link>
+
             </div>
         </section>
     );

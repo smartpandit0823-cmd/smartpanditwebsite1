@@ -47,7 +47,7 @@ export function StoreReelsDiscovery({ products }: { products: ReelProduct[] }) {
                             className="relative w-[160px] shrink-0 snap-start overflow-hidden rounded-2xl shadow-md md:w-[200px]"
                         >
                             {/* Vertical media card */}
-                            <Link href={`/store/${product.slug}`} className="block">
+                            <Link href={`/product/${product.slug}`} className="block">
                                 <div className="relative aspect-9/16 bg-linear-to-br from-warm-100 to-saffron-50">
                                     <Image
                                         src={product.images?.[0] || "/placeholder-product.jpg"}

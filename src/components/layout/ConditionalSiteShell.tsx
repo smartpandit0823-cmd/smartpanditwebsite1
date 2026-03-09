@@ -11,7 +11,7 @@ import { WhatsAppButton } from "./WhatsAppButton";
 export function ConditionalSiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
-  const isAuthPage = pathname?.startsWith("/user/login") || pathname?.startsWith("/(auth)");
+  const isAuthPage = pathname?.startsWith("/user/login") || pathname?.startsWith("/(auth)") || pathname === "/login";
 
   // Admin pages — no shell
   if (isAdmin) {
@@ -28,7 +28,7 @@ export function ConditionalSiteShell({ children }: { children: React.ReactNode }
   }
 
   // Pages where we don't want to show the BottomNav on mobile
-  const isProductPage = pathname?.startsWith("/store/");
+  const isProductPage = pathname?.startsWith("/product/");
   const isCart = pathname === "/cart";
   const isCheckout = pathname === "/checkout";
   const isOrderSuccess = pathname?.startsWith("/order-success");
@@ -37,12 +37,17 @@ export function ConditionalSiteShell({ children }: { children: React.ReactNode }
 
   const hideBottomNavOnMobile = isProductPage || isCart || isCheckout || isOrderSuccess || isAddressPage || isSettingsPage;
 
+  // Header is fixed (trust strip 32px + header ~56px = ~88px on mobile, ~96px on desktop)
+  const isHome = pathname === "/";
+  // Homepage hero stretches behind header (hero manages its own top padding)
+  const topPadding = isHome ? "pt-[86px] md:pt-[96px]" : "pt-[86px] md:pt-[96px]";
+
   return (
     <UserProvider>
       <CartProvider>
         <div className="flex min-h-dvh flex-col">
           <Header />
-          <main className={`flex-1 ${!hideBottomNavOnMobile ? "pb-24 md:pb-0" : ""}`}>
+          <main className={`flex-1 ${topPadding} ${!hideBottomNavOnMobile ? "pb-20 md:pb-0" : ""}`}>
             {children}
           </main>
           {/* Footer: hidden on mobile, shown on desktop */}

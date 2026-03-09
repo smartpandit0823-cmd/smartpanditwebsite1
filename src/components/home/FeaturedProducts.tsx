@@ -14,19 +14,15 @@ async function getFeaturedProducts() {
     id: p._id.toString(),
     slug: p.slug,
     name: p.name,
-    category: p.category,
-    images: p.images?.length ? p.images : [p.mainImage].filter(Boolean),
-    price: p.pricing?.sellingPrice ?? 0,
-    originalPrice: p.pricing?.mrp && p.pricing.mrp > (p.pricing?.sellingPrice ?? 0) ? p.pricing.mrp : undefined,
+    image: p.mainImage || (p.images && p.images[0]) || "/placeholder-product.jpg",
+    sellingPrice: p.pricing?.sellingPrice ?? 0,
+    mrp: p.pricing?.mrp,
     discount: p.pricing?.discount ?? 0,
-    rating: (p as { averageRating?: number }).averageRating ?? 4.7,
-    reviewCount: (p as { totalSold?: number }).totalSold ?? 0,
-    benefits: p.spiritualBenefits ? [p.spiritualBenefits] : [],
-    description: p.shortDescription,
+    rating: (p as any).averageRating ?? 4.7,
+    reviewCount: (p as any).totalSold ?? 0,
     inStock: p.inventory?.inStock ?? true,
-    isAuthentic: Boolean(p.authenticityCertificate),
-    featured: p.featured,
-  })) as ProductType[];
+    badge: p.featured ? "BESTSELLER" : undefined,
+  })) as any[];
 }
 
 export async function FeaturedProducts() {
@@ -46,7 +42,7 @@ export async function FeaturedProducts() {
             centered={false}
           />
           <Link
-            href="/store"
+            href="/shop"
             className="hidden items-center gap-2 rounded-full bg-saffron-50 px-5 py-2.5 text-sm font-semibold text-saffron-700 transition hover:bg-saffron-100 hover:text-saffron-800 md:inline-flex shadow-sm"
           >
             <ShoppingBag size={16} />
@@ -65,7 +61,7 @@ export async function FeaturedProducts() {
 
         <div className="mt-10 text-center md:hidden">
           <Link
-            href="/store"
+            href="/shop"
             className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-saffron-300 bg-white px-6 py-4 text-base font-bold text-saffron-700 transition hover:bg-saffron-50 active:scale-[0.98]"
           >
             <ShoppingBag size={18} />

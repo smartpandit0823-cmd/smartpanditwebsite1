@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -49,6 +49,8 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "dotenv": "^17.3.1",
+    "firebase": "^12.10.0",
+    "firebase-admin": "^13.7.0",
     "google-auth-library": "^10.5.0",
     "lucide-react": "^0.575.0",
     "mongoose": "^9.2.1",

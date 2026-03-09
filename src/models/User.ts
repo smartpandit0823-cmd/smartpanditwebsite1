@@ -117,9 +117,6 @@ const UserSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-UserSchema.index({ phone: 1 });
-UserSchema.index({ email: 1 }, { sparse: true });
-UserSchema.index({ googleId: 1 }, { sparse: true });
 UserSchema.index({ status: 1 });
 
 const User: Model<IUser> =

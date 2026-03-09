@@ -1,16 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Poppins } from "next/font/google";
+import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
 import { ConditionalSiteShell } from "@/components/layout/ConditionalSiteShell";
 
-const playfair = Playfair_Display({
+const poppins = Poppins({
   subsets: ["latin"],
   variable: "--font-heading",
   display: "swap",
   weight: ["400", "500", "600", "700", "800"],
 });
 
-const poppins = Poppins({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
@@ -83,7 +83,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${playfair.variable} ${poppins.variable}`}>
+    <html lang="en" className={`${poppins.variable} ${inter.variable}`}>
       <body className="antialiased font-sans bg-warm-50 text-warm-900">
         <ConditionalSiteShell>{children}</ConditionalSiteShell>
       </body>

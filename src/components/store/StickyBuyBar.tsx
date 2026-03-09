@@ -14,7 +14,7 @@ export function StickyBuyBar({
     price = 0,
     originalPrice,
     inStock = true,
-    href = "/store",
+    href = "/shop",
 }: StickyBuyBarProps) {
     return (
         <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-gold-200/50 bg-white/95 backdrop-blur-xl md:hidden">

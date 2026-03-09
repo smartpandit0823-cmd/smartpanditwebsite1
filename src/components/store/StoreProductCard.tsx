@@ -48,7 +48,7 @@ export function StoreProductCard({ product }: { product: StoreProduct }) {
     return (
         <div className="card-premium group relative flex flex-col overflow-hidden rounded-2xl border border-gold-200/60 bg-white shadow-sm">
             {/* Image Container */}
-            <Link href={`/store/${product.slug}`} className="relative aspect-square overflow-hidden bg-linear-to-br from-warm-50 to-saffron-50/30">
+            <Link href={`/product/${product.slug}`} className="relative aspect-square overflow-hidden bg-linear-to-br from-warm-50 to-saffron-50/30">
                 <Image
                     src={mainImage}
                     alt={product.name}
@@ -105,7 +105,7 @@ export function StoreProductCard({ product }: { product: StoreProduct }) {
                 </span>
 
                 {/* Name */}
-                <Link href={`/store/${product.slug}`}>
+                <Link href={`/product/${product.slug}`}>
                     <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-warm-900 transition-colors hover:text-saffron-600">
                         {product.name}
                     </h3>

@@ -18,7 +18,7 @@ export function StoreCategoriesGrid() {
                             Explore our curated spiritual collections
                         </p>
                     </div>
-                    <Link href="/store" className="text-xs font-semibold text-saffron-600 hover:text-saffron-700 transition-colors">
+                    <Link href="/shop" className="text-xs font-semibold text-saffron-600 hover:text-saffron-700 transition-colors">
                         View All →
                     </Link>
                 </div>

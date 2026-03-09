@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
 import connectDB from "@/lib/db/mongodb";
 import User from "@/models/User";
-import Otp from "@/models/Otp";
 import { createUserSession, setUserCookie } from "@/lib/jwt/user-session";
 import { logApiError } from "@/lib/api-logger";
 import { z } from "zod";
+import { authAdmin } from "@/lib/firebase/admin";
 
 const BodySchema = z.object({
-  phone: z.string().min(10),
-  otp: z.string().length(6),
+  token: z.string(),
   name: z.string().optional(),
   email: z.string().email().optional().or(z.literal("")),
   city: z.string().optional(),
@@ -21,10 +19,6 @@ const BodySchema = z.object({
   }).optional()
 });
 
-function hashOtp(otp: string): string {
-  return crypto.createHash("sha256").update(otp).digest("hex");
-}
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -33,26 +27,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid input", details: parsed.error.flatten() }, { status: 400 });
     }
 
-    const { phone, otp, name, email, city, googleData } = parsed.data;
-    const cleanPhone = phone.replace(/\D/g, "");
-    const otpHash = hashOtp(otp);
+    const { token, name, email, city, googleData } = parsed.data;
+
+    let decodedToken;
+    try {
+      decodedToken = await authAdmin.verifyIdToken(token);
+    } catch (e) {
+      logApiError("/api/auth/verify-otp", "POST", e);
+      return NextResponse.json({ error: "Invalid or expired Firebase token" }, { status: 401 });
+    }
+
+    const phoneStr = decodedToken.phone_number;
+    if (!phoneStr) {
+      return NextResponse.json({ error: "Phone number not found in token" }, { status: 400 });
+    }
+
+    const cleanPhone = phoneStr.replace(/\D/g, ""); // Keep only digits
 
     await connectDB();
-
-    const otpRecord = await Otp.findOne({ phone: cleanPhone }).sort({ createdAt: -1 });
-    if (!otpRecord) {
-      return NextResponse.json({ error: "OTP expired or invalid" }, { status: 400 });
-    }
-    if (otpRecord.expiresAt < new Date()) {
-      return NextResponse.json({ error: "OTP expired" }, { status: 400 });
-    }
-    if (otpRecord.otpHash !== otpHash) {
-      await Otp.findByIdAndUpdate(otpRecord._id, { $inc: { attempts: 1 } });
-      return NextResponse.json({ error: "Invalid OTP" }, { status: 400 });
-    }
-    if (otpRecord.attempts >= 5) {
-      return NextResponse.json({ error: "Too many failed attempts" }, { status: 429 });
-    }
 
     let user = await User.findOne({ phone: cleanPhone });
     if (!user) {
@@ -76,10 +68,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    await Otp.findByIdAndDelete(otpRecord._id);
-
-    const token = await createUserSession(user._id.toString(), cleanPhone);
-    await setUserCookie(token);
+    const sessionToken = await createUserSession(user._id.toString(), cleanPhone);
+    await setUserCookie(sessionToken);
 
     return NextResponse.json({
       success: true,
@@ -93,6 +83,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (e) {
     logApiError("/api/auth/verify-otp", "POST", e);
-    return NextResponse.json({ error: "Verification failed" }, { status: 500 });
+    return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 500 });
   }
 }

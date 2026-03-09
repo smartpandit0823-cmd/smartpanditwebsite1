@@ -21,11 +21,16 @@ export async function GET(req: NextRequest) {
     }
 
     const [products, total] = await Promise.all([
-      Product.find(filter).skip((page - 1) * limit).limit(limit).lean(),
+      Product.find(filter)
+        .select("name slug shortDescription mainImage images pricing category inventory")
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
       Product.countDocuments(filter),
     ]);
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       data: products.map((p) => ({
         id: p._id.toString(),
         name: p.name,
@@ -41,6 +46,10 @@ export async function GET(req: NextRequest) {
       page,
       totalPages: Math.ceil(total / limit),
     });
+
+    // Cache product lists for 30s, stale-while-revalidate for 60s
+    res.headers.set("Cache-Control", "public, s-maxage=30, stale-while-revalidate=60");
+    return res;
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });

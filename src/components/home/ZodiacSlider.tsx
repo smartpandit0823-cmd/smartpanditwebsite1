@@ -1,90 +1,84 @@
-"use client";
-
 import Link from "next/link";
-import { useRef } from "react";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
-const ZODIAC_SIGNS = [
-    { sign: "Aries", name: "Mesh", date: "Mar 21 - Apr 19", stone: "Red Coral", color: "bg-red-50", text: "text-red-700" },
-    { sign: "Taurus", name: "Vrishabha", date: "Apr 20 - May 20", stone: "Diamond / Opal", color: "bg-green-50", text: "text-green-700" },
-    { sign: "Gemini", name: "Mithun", date: "May 21 - Jun 20", stone: "Emerald", color: "bg-yellow-50", text: "text-yellow-700" },
-    { sign: "Cancer", name: "Karkat", date: "Jun 21 - Jul 22", stone: "Pearl", color: "bg-slate-50", text: "text-slate-700" },
-    { sign: "Leo", name: "Simha", date: "Jul 23 - Aug 22", stone: "Ruby", color: "bg-orange-50", text: "text-orange-700" },
-    { sign: "Virgo", name: "Kanya", date: "Aug 23 - Sep 22", stone: "Emerald", color: "bg-emerald-50", text: "text-emerald-700" },
-    { sign: "Libra", name: "Tula", date: "Sep 23 - Oct 22", stone: "Diamond / Opal", color: "bg-pink-50", text: "text-pink-700" },
-    { sign: "Scorpio", name: "Vrishchik", date: "Oct 23 - Nov 21", stone: "Red Coral", color: "bg-red-50", text: "text-red-700" },
-    { sign: "Sagittarius", name: "Dhanu", date: "Nov 22 - Dec 21", stone: "Yellow Sapphire", color: "bg-amber-50", text: "text-amber-700" },
-    { sign: "Capricorn", name: "Makar", date: "Dec 22 - Jan 19", stone: "Blue Sapphire", color: "bg-blue-50", text: "text-blue-700" },
-    { sign: "Aquarius", name: "Kumbh", date: "Jan 20 - Feb 18", stone: "Blue Sapphire", color: "bg-indigo-50", text: "text-indigo-700" },
-    { sign: "Pisces", name: "Meen", date: "Feb 19 - Mar 20", stone: "Yellow Sapphire", color: "bg-purple-50", text: "text-purple-700" }
+// Mappings for astrological elements and colors
+const RASHI_DATA = [
+    { name: "Aries", dates: "Mar 21 – Apr 19", element: "fire", symbol: "♈", stone: "Red Coral", slug: "aries" },
+    { name: "Taurus", dates: "Apr 20 – May 20", element: "earth", symbol: "♉", stone: "Diamond/Opal", slug: "taurus" },
+    { name: "Gemini", dates: "May 21 – Jun 20", element: "air", symbol: "♊", stone: "Emerald", slug: "gemini" },
+    { name: "Cancer", dates: "Jun 21 – Jul 22", element: "water", symbol: "♋", stone: "Pearl", slug: "cancer" },
+    { name: "Leo", dates: "Jul 23 – Aug 22", element: "fire", symbol: "♌", stone: "Ruby", slug: "leo" },
+    { name: "Virgo", dates: "Aug 23 – Sep 22", element: "earth", symbol: "♍", stone: "Emerald", slug: "virgo" },
+    { name: "Libra", dates: "Sep 23 – Oct 22", element: "air", symbol: "♎", stone: "Diamond", slug: "libra" },
+    { name: "Scorpio", dates: "Oct 23 – Nov 21", element: "water", symbol: "♏", stone: "Red Coral", slug: "scorpio" },
+    { name: "Sagittarius", dates: "Nov 22 – Dec 21", element: "fire", symbol: "♐", stone: "Yellow Sapphire", slug: "sagittarius" },
+    { name: "Capricorn", dates: "Dec 22 – Jan 19", element: "earth", symbol: "♑", stone: "Blue Sapphire", slug: "capricorn" },
+    { name: "Aquarius", dates: "Jan 20 – Feb 18", element: "air", symbol: "♒", stone: "Blue Sapphire", slug: "aquarius" },
+    { name: "Pisces", dates: "Feb 19 – Mar 20", element: "water", symbol: "♓", stone: "Yellow Sapphire", slug: "pisces" }
 ];
 
+const getElementColors = (element: string) => {
+    switch (element) {
+        case "fire": return { bg: "bg-red-50", text: "text-red-500", border: "border-red-100" };
+        case "earth": return { bg: "bg-green-50", text: "text-green-600", border: "border-green-100" };
+        case "air": return { bg: "bg-yellow-50", text: "text-amber-500", border: "border-yellow-200" };
+        case "water": return { bg: "bg-blue-50", text: "text-blue-500", border: "border-blue-100" };
+        default: return { bg: "bg-gray-50", text: "text-gray-500", border: "border-gray-200" };
+    }
+};
+
 export function ZodiacSlider() {
-    const scrollRef = useRef<HTMLDivElement>(null);
-
-    const scroll = (dir: 1 | -1) => {
-        scrollRef.current?.scrollBy({ left: dir * 200, behavior: "smooth" });
-    };
-
     return (
-        <section className="section-shell bg-gradient-to-br from-cosmic-50 to-white">
-            <div className="section-wrap">
-                <div className="flex items-end justify-between mb-6">
-                    <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <Sparkles size={16} className="text-cosmic-600" />
-                            <span className="text-xs font-bold text-cosmic-600 tracking-wider">
-                                SHOP BY RASHI
-                            </span>
-                        </div>
-                        <h2 className="font-heading text-2xl md:text-3xl font-bold text-warm-900">
-                            Your Astrological Remedies
-                        </h2>
+        <section className="py-8 md:py-10 bg-[#FFF8F0] px-4 relative overflow-hidden">
+            {/* Background Decor */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-400 opacity-5 blur-[100px] rounded-full pointer-events-none"></div>
+
+            <div className="max-w-7xl mx-auto relative z-10">
+                <div className="flex flex-col items-center text-center mb-6">
+                    <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#8B5CF6] text-white rounded-full text-xs font-bold tracking-wider mb-4 shadow-sm shadow-[#8B5CF6]/20">
+                        <span role="img" aria-label="crystal ball">🔮</span>
+                        SHOP BY RASHI
                     </div>
+                    <h2 className="text-3xl md:text-4xl font-heading font-bold text-[#1A1A1A]">
+                        Your Astrological Remedies
+                    </h2>
                 </div>
 
-                <div className="relative group">
-                    <div
-                        ref={scrollRef}
-                        className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth p-2 -mx-2"
-                    >
-                        {ZODIAC_SIGNS.map((zodiac) => (
-                            <div key={zodiac.sign} className="w-[180px] shrink-0">
+                <div className="flex overflow-x-auto gap-4 md:grid md:grid-cols-4 lg:grid-cols-6 md:gap-4 pb-6 no-scrollbar snap-x snap-mandatory px-1 py-2">
+                    {RASHI_DATA.map((rashi) => {
+                        const colors = getElementColors(rashi.element);
+
+                        return (
+                            <div
+                                key={rashi.slug}
+                                className={`snap-start shrink-0 w-[150px] md:w-auto flex flex-col items-center bg-white border ${colors.border} rounded-2xl p-4 shadow-sm hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all hover:-translate-y-1`}
+                            >
+                                {/* Zodiac Symbol */}
+                                <div className={`w-14 h-14 rounded-full flex items-center justify-center text-4xl mb-3 ${colors.bg} ${colors.text} shadow-inner`}>
+                                    {rashi.symbol}
+                                </div>
+
+                                <h3 className="font-bold text-lg text-[#1A1A1A] mb-0.5">{rashi.name}</h3>
+                                <p className="text-[11px] font-medium text-[#888888] mb-4">{rashi.dates}</p>
+
+                                <div className="w-full h-px bg-gray-100 mb-3 relative">
+                                    <div className="absolute left-1/2 -top-1.5 -translate-x-1/2 bg-white px-2">
+                                        <Sparkles size={12} className="text-[#FF8C00]" />
+                                    </div>
+                                </div>
+
+                                <span className="text-[10px] font-bold text-[#00CEC9] uppercase tracking-wider mb-1">Lucky Stone</span>
+                                <span className="text-sm font-bold text-[#FF8C00] text-center mb-4 line-clamp-1">{rashi.stone}</span>
+
                                 <Link
-                                    href={`/store?rashi=${zodiac.sign.toLowerCase()}`}
-                                    className="flex flex-col items-center bg-white border border-cosmic-100 rounded-2xl p-5 text-center shadow-sm hover:shadow-md transition-all hover:-translate-y-1"
+                                    href={`/shop?zodiac=${rashi.slug}`}
+                                    className="w-full mt-auto text-center py-2 px-4 border-2 border-[#FF8C00] text-[#FF8C00] font-bold text-sm rounded-xl hover:bg-[#FF8C00] hover:text-white transition-colors"
                                 >
-                                    <div className={`size-14 rounded-full ${zodiac.color} flex items-center justify-center mb-3`}>
-                                        <span className={`font-heading text-lg font-bold ${zodiac.text}`}>
-                                            {zodiac.name[0]}
-                                        </span>
-                                    </div>
-                                    <h3 className="font-bold text-warm-900">{zodiac.sign}</h3>
-                                    <span className="text-[10px] text-warm-500 mb-3">{zodiac.date}</span>
-                                    <div className="w-full bg-cosmic-50 rounded-lg p-2 mb-3">
-                                        <span className="block text-[9px] text-cosmic-600 uppercase font-semibold mb-0.5">Lucky Stone</span>
-                                        <span className="text-xs font-medium text-warm-900">{zodiac.stone}</span>
-                                    </div>
-                                    <span className="text-xs font-semibold text-cosmic-600 w-full rounded-full border border-cosmic-200 py-1.5 hover:bg-cosmic-50 transition-colors">
-                                        Shop Now
-                                    </span>
+                                    Shop Now
                                 </Link>
                             </div>
-                        ))}
-                    </div>
-
-                    <button
-                        onClick={() => scroll(-1)}
-                        className="absolute -left-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 hidden md:flex size-10 items-center justify-center rounded-full bg-white shadow-md text-warm-500 hover:text-cosmic-600 transition"
-                    >
-                        <ChevronLeft size={20} />
-                    </button>
-                    <button
-                        onClick={() => scroll(1)}
-                        className="absolute -right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 hidden md:flex size-10 items-center justify-center rounded-full bg-white shadow-md text-warm-500 hover:text-cosmic-600 transition"
-                    >
-                        <ChevronRight size={20} />
-                    </button>
+                        );
+                    })}
                 </div>
             </div>
         </section>

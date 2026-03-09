@@ -16,23 +16,49 @@ export async function GET(req: NextRequest) {
 
     await connectDB();
 
+    // Only show orders that are not "created" with "pending" payment (incomplete checkouts)
+    const filter = {
+      userId: session.userId,
+      $or: [
+        { paymentStatus: "paid" },
+        { paymentStatus: "refunded" },
+        { status: { $ne: "created" } },
+        // COD orders have status "paid" set by admin or "processing"
+        { paymentStatus: "pending", status: { $in: ["paid", "processing", "shipped", "delivered"] } },
+      ],
+    };
+
     const [orders, total] = await Promise.all([
-      Order.find({ userId: session.userId })
+      Order.find(filter)
+        .select("items totalAmount shippingFee status paymentStatus shippingAddress trackingId delhiveryWaybill delhiveryStatus createdAt updatedAt")
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit)
         .lean(),
-      Order.countDocuments({ userId: session.userId }),
+      Order.countDocuments(filter),
     ]);
 
     return NextResponse.json({
-      data: orders.map((o) => ({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data: orders.map((o: any) => ({
         id: o._id.toString(),
         totalAmount: o.totalAmount,
+        shippingFee: o.shippingFee || 0,
         status: o.status,
         paymentStatus: o.paymentStatus,
+        items: (o.items || []).map((item: { name: string; price: number; quantity: number; image?: string }) => ({
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image || "",
+        })),
         itemCount: o.items?.length ?? 0,
+        shippingAddress: o.shippingAddress || null,
+        trackingId: o.trackingId || null,
+        delhiveryWaybill: o.delhiveryWaybill || null,
+        delhiveryStatus: o.delhiveryStatus || null,
         createdAt: o.createdAt,
+        updatedAt: o.updatedAt,
       })),
       total,
       page,

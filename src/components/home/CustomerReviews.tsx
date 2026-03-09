@@ -1,164 +1,90 @@
 "use client";
 
-import { useRef } from "react";
-import { Star, ChevronLeft, ChevronRight, BadgeCheck } from "lucide-react";
+import { useState } from "react";
+import { Star, CheckCircle2, PenLine } from "lucide-react";
+import { ReviewData } from "@/app/(store)/StoreHomeClient";
+import { WriteReviewModal } from "@/components/reviews/WriteReviewModal";
 
-interface Review {
-    id: string;
-    name: string;
-    location?: string;
-    photo?: string;
-    avatar?: string;
-    rating: number;
-    text: string;
-    product: string;
-    verified: boolean;
-}
-
-const DEMO_REVIEWS: Review[] = [
-    {
-        id: "r1",
-        name: "Priya S.",
-        location: "Mumbai, MH",
-        rating: 5,
-        text: "The 5 Mukhi Rudraksha is absolutely genuine. I can feel the positive energy. Packaging was premium and delivery was fast!",
-        product: "5 Mukhi Rudraksha",
-        verified: true,
-    },
-    {
-        id: "r2",
-        name: "Rahul M.",
-        location: "Delhi",
-        rating: 5,
-        text: "Best puja kit I've ever purchased! Everything was included and the quality is outstanding. Will order again.",
-        product: "Complete Puja Kit",
-        verified: true,
-    },
-    {
-        id: "r3",
-        name: "Anisha K.",
-        location: "Bangalore, KA",
-        rating: 4,
-        text: "Beautiful gemstone bracelet. The color is exactly as shown. Very good customer service too. Highly recommend!",
-        product: "Amethyst Bracelet",
-        verified: true,
-    },
-    {
-        id: "r4",
-        name: "Deepak J.",
-        location: "Pune, MH",
-        rating: 5,
-        text: "Ordered the Siddh collection items. The energization certificate added trust. Products were exactly as described.",
-        product: "Siddh Hanuman Kavach",
-        verified: true,
-    },
-    {
-        id: "r5",
-        name: "Meera P.",
-        location: "Ahmedabad, GJ",
-        rating: 5,
-        text: "Amazing quality Yantra! The gold plating is premium and it came with a genuine authenticity certificate.",
-        product: "Shree Yantra",
-        verified: true,
-    },
-];
-
-export function CustomerReviews() {
-    const scrollRef = useRef<HTMLDivElement>(null);
-
-    const scroll = (dir: 1 | -1) => {
-        scrollRef.current?.scrollBy({ left: dir * 280, behavior: "smooth" });
-    };
+export function CustomerReviews({ reviews }: { reviews: ReviewData[] }) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
-        <section className="section-shell bg-gradient-to-b from-warm-50 to-saffron-50/20">
-            <div className="section-wrap">
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <h2 className="font-heading text-2xl md:text-3xl font-bold text-warm-900">
+        <section className="py-8 md:py-10 bg-[#FFF8F0] px-4 overflow-hidden relative">
+            <div className="max-w-7xl mx-auto relative z-10">
+                <div className="flex flex-col items-center text-center mb-10">
+                    <h2 className="text-3xl md:text-4xl font-heading font-bold text-[#1A1A1A] leading-tight mb-2">
                         Customer Reviews
                     </h2>
-                    <p className="text-sm text-warm-600 mt-1">What our devotees say about us</p>
-                    <div className="flex items-center justify-center gap-1 mt-3">
-                        {[...Array(5)].map((_, i) => (
-                            <Star key={i} size={16} className="fill-amber-400 text-amber-400" />
-                        ))}
-                        <span className="ml-2 text-sm font-semibold text-warm-800">4.8/5</span>
-                        <span className="text-xs text-warm-500 ml-1">(2.5k+ reviews)</span>
+                    <p className="text-[#888888] text-sm md:text-base font-medium mb-4">
+                        What our devotees say about us
+                    </p>
+                    <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white border border-[#FFD700] rounded-full text-sm font-bold shadow-sm text-[#1A1A1A]">
+                        <div className="flex text-[#FFD700]">
+                            {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
+                        </div>
+                        {reviews.length > 0
+                            ? `${(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)}/5`
+                            : "5.0/5"}
+                        <span className="text-[#888888] ml-1 font-medium">({reviews.length}+ reviews)</span>
                     </div>
                 </div>
 
-                {/* Reviews Slider */}
-                <div className="relative">
-                    <div
-                        ref={scrollRef}
-                        className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth -mx-4 px-4"
-                    >
-                        {DEMO_REVIEWS.map((review) => (
-                            <div
-                                key={review.id}
-                                className="flex-shrink-0 w-[270px] md:w-[300px] card-surface rounded-2xl p-5"
-                            >
-                                {/* Stars */}
-                                <div className="flex gap-0.5 mb-3">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star
-                                            key={i}
-                                            size={13}
-                                            className={i < review.rating ? "fill-amber-400 text-amber-400" : "text-warm-200"}
-                                        />
-                                    ))}
+                <div className="flex overflow-x-auto gap-4 pb-6 no-scrollbar snap-x snap-mandatory px-1 py-2">
+                    {reviews.map((review) => (
+                        <div
+                            key={review.id}
+                            className="snap-start shrink-0 w-[300px] flex flex-col bg-white border border-yellow-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative"
+                        >
+                            {review.productName && (
+                                <div className="absolute -top-3 left-4 bg-[#FF8C00] text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded shadow-sm">
+                                    Bought: {review.productName}
                                 </div>
+                            )}
 
-                                {/* Review text */}
-                                <p className="text-sm text-warm-700 leading-relaxed line-clamp-4 mb-4">
-                                    &ldquo;{review.text}&rdquo;
-                                </p>
+                            <div className="flex text-[#FFD700] mb-3 mt-2">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star key={i} size={14} fill={i < review.rating ? "currentColor" : "none"} className={i >= review.rating ? "text-gray-300" : ""} />
+                                ))}
+                            </div>
 
-                                {/* Product */}
-                                <p className="text-[10px] text-saffron-600 font-medium mb-3">
-                                    Bought: {review.product}
-                                </p>
+                            <p className="italic text-[#1A1A1A] text-sm leading-relaxed mb-6 font-medium line-clamp-3">
+                                &quot;{review.comment}&quot;
+                            </p>
 
-                                {/* Reviewer */}
-                                <div className="flex items-center gap-2 pt-3 border-t border-warm-100 relative">
-                                    <div className="size-8 rounded-full bg-gradient-to-br from-saffron-400 to-saffron-600 flex shrink-0 items-center justify-center text-white text-xs font-bold">
-                                        {review.name[0]}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-xs font-semibold text-warm-900 truncate flex items-center gap-1">
-                                            {review.name}
-                                            {review.verified && (
-                                                <span className="flex items-center gap-0.5 text-[9px] font-bold text-green-600 bg-green-50 px-1 rounded">
-                                                    <BadgeCheck size={10} />
-                                                    Verified Buyer
-                                                </span>
-                                            )}
-                                        </p>
-                                        {review.location && (
-                                            <p className="text-[10px] text-warm-400 truncate">{review.location}</p>
+                            <div className="mt-auto pt-4 border-t border-gray-100 flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-[#FEFAF4] text-[#FF8C00] flex items-center justify-center font-bold text-lg shadow-inner">
+                                    {review.customerName.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-[#1A1A1A] text-sm leading-none mb-1">{review.customerName}</h4>
+                                    <div className="flex items-center gap-1.5 text-[11px] text-[#888888] font-medium">
+                                        {review.isVerifiedPurchase && (
+                                            <span className="flex items-center gap-0.5 text-[#00CEC9]">
+                                                <CheckCircle2 size={12} />
+                                                Verified
+                                            </span>
                                         )}
+                                        {review.city && <span>• {review.city}</span>}
                                     </div>
                                 </div>
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
+                </div>
 
-                    {/* Desktop arrows */}
+                {/* Write a Review CTA */}
+                <div className="mt-8 flex justify-center">
                     <button
-                        onClick={() => scroll(-1)}
-                        className="absolute -left-3 top-1/2 -translate-y-1/2 hidden md:flex size-10 rounded-full bg-white shadow-lg items-center justify-center text-warm-600 hover:text-saffron-600 transition"
+                        onClick={() => setIsModalOpen(true)}
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-[#FF8C00] text-white font-bold rounded-full shadow-md hover:bg-[#E67E00] transition-colors"
                     >
-                        <ChevronLeft size={18} />
-                    </button>
-                    <button
-                        onClick={() => scroll(1)}
-                        className="absolute -right-3 top-1/2 -translate-y-1/2 hidden md:flex size-10 rounded-full bg-white shadow-lg items-center justify-center text-warm-600 hover:text-saffron-600 transition"
-                    >
-                        <ChevronRight size={18} />
+                        <PenLine size={16} />
+                        Write a Review
                     </button>
                 </div>
             </div>
+
+            <WriteReviewModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </section>
     );
 }

@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
     Select,
     SelectContent,
@@ -27,6 +26,7 @@ import {
     Search,
     X,
     MessageCircle,
+    Filter,
 } from "lucide-react";
 
 // ──────────────── Types ────────────────
@@ -73,41 +73,48 @@ export interface AdminTableProps<T> {
 // ──────────────── Status Badge Colors ────────────────
 
 const STATUS_COLORS: Record<string, string> = {
-    active: "bg-emerald-100 text-emerald-700",
-    completed: "bg-emerald-100 text-emerald-700",
-    verified: "bg-emerald-100 text-emerald-700",
-    paid: "bg-emerald-100 text-emerald-700",
-    delivered: "bg-emerald-100 text-emerald-700",
-    success: "bg-emerald-100 text-emerald-700",
-    published: "bg-emerald-100 text-emerald-700",
-    confirmed: "bg-emerald-100 text-emerald-700",
-    pending: "bg-amber-100 text-amber-700",
-    requested: "bg-amber-100 text-amber-700",
-    processing: "bg-amber-100 text-amber-700",
-    assigned: "bg-blue-100 text-blue-700",
-    inprogress: "bg-blue-100 text-blue-700",
-    shipped: "bg-blue-100 text-blue-700",
-    cancelled: "bg-red-100 text-red-700",
-    rejected: "bg-red-100 text-red-700",
-    failed: "bg-red-100 text-red-700",
-    suspended: "bg-red-100 text-red-700",
-    deleted: "bg-gray-100 text-gray-500",
-    inactive: "bg-gray-100 text-gray-500",
-    draft: "bg-gray-100 text-gray-500",
-    blocked: "bg-red-100 text-red-700",
-    refunded: "bg-purple-100 text-purple-700",
-    partial: "bg-orange-100 text-orange-700",
-    normal: "bg-gray-100 text-gray-600",
-    urgent: "bg-orange-100 text-orange-700",
-    vip: "bg-purple-100 text-purple-700",
+    active: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    completed: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    verified: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    paid: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    delivered: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    success: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    published: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    confirmed: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    pending: "bg-amber-50 text-amber-700 border border-amber-200",
+    requested: "bg-amber-50 text-amber-700 border border-amber-200",
+    processing: "bg-amber-50 text-amber-700 border border-amber-200",
+    assigned: "bg-blue-50 text-blue-700 border border-blue-200",
+    inprogress: "bg-blue-50 text-blue-700 border border-blue-200",
+    shipped: "bg-blue-50 text-blue-700 border border-blue-200",
+    cancelled: "bg-red-50 text-red-700 border border-red-200",
+    rejected: "bg-red-50 text-red-700 border border-red-200",
+    failed: "bg-red-50 text-red-700 border border-red-200",
+    suspended: "bg-red-50 text-red-700 border border-red-200",
+    deleted: "bg-gray-50 text-gray-500 border border-gray-200",
+    inactive: "bg-gray-50 text-gray-500 border border-gray-200",
+    draft: "bg-gray-50 text-gray-500 border border-gray-200",
+    blocked: "bg-red-50 text-red-700 border border-red-200",
+    refunded: "bg-purple-50 text-purple-700 border border-purple-200",
+    partial: "bg-orange-50 text-orange-700 border border-orange-200",
+    normal: "bg-gray-50 text-gray-600 border border-gray-200",
+    urgent: "bg-orange-50 text-orange-700 border border-orange-200",
+    vip: "bg-purple-50 text-purple-700 border border-purple-200",
+    created: "bg-slate-50 text-slate-600 border border-slate-200",
 };
 
 export function StatusBadge({ status }: { status: string }) {
-    const color = STATUS_COLORS[status.toLowerCase()] || "bg-gray-100 text-gray-600";
+    const color = STATUS_COLORS[status.toLowerCase()] || "bg-gray-50 text-gray-600 border border-gray-200";
     return (
         <span
-            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${color}`}
+            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold capitalize ${color}`}
         >
+            <span className={`mr-1.5 h-1.5 w-1.5 rounded-full ${status.toLowerCase() === "paid" || status.toLowerCase() === "delivered" || status.toLowerCase() === "completed" ? "bg-emerald-500" :
+                    status.toLowerCase() === "pending" || status.toLowerCase() === "processing" ? "bg-amber-500" :
+                        status.toLowerCase() === "shipped" || status.toLowerCase() === "assigned" ? "bg-blue-500" :
+                            status.toLowerCase() === "cancelled" || status.toLowerCase() === "failed" ? "bg-red-500" :
+                                "bg-gray-400"
+                }`} />
             {status.replace(/_/g, " ")}
         </span>
     );
@@ -115,7 +122,6 @@ export function StatusBadge({ status }: { status: string }) {
 
 // ──────────────── CSV Export ────────────────
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function exportToCSV<T>(
     data: T[],
     columns: AdminColumn<T>[],
@@ -205,7 +211,7 @@ export function AdminTable<T extends Record<string, any>>({
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                        className="pl-9 pr-8"
+                        className="pl-9 pr-8 h-10 rounded-xl border-gray-200 bg-white focus:border-saffron-300"
                     />
                     {search && (
                         <button
@@ -224,10 +230,11 @@ export function AdminTable<T extends Record<string, any>>({
                         defaultValue={searchParams.get(filter.key) || "all"}
                         onValueChange={(v) => updateParams(filter.key, v)}
                     >
-                        <SelectTrigger className="w-[150px]">
+                        <SelectTrigger className="w-[150px] h-10 rounded-xl border-gray-200">
+                            <Filter className="h-3.5 w-3.5 mr-2 text-gray-400" />
                             <SelectValue placeholder={filter.label} />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="rounded-xl">
                             <SelectItem value="all">All {filter.label}</SelectItem>
                             {filter.options.map((opt) => (
                                 <SelectItem key={opt.value} value={opt.value}>
@@ -244,7 +251,7 @@ export function AdminTable<T extends Record<string, any>>({
                         variant="outline"
                         size="sm"
                         onClick={() => exportToCSV(data as Record<string, unknown>[] as typeof data, columns, exportFilename)}
-                        className="ml-auto"
+                        className="ml-auto rounded-xl h-10 border-gray-200"
                     >
                         <Download className="mr-2 h-4 w-4" />
                         Export CSV
@@ -253,17 +260,17 @@ export function AdminTable<T extends Record<string, any>>({
             </div>
 
             {/* ─── Table ─── */}
-            <div className="rounded-xl border border-gold-200 bg-white overflow-hidden">
+            <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-sm">
                 <Table>
                     <TableHeader>
-                        <TableRow className="bg-warm-50/50">
+                        <TableRow className="bg-gray-50/80 border-b border-gray-100">
                             {columns.map((col) => (
-                                <TableHead key={col.key} className={col.className}>
+                                <TableHead key={col.key} className={`text-xs font-semibold text-gray-500 uppercase tracking-wider ${col.className || ""}`}>
                                     {col.label}
                                 </TableHead>
                             ))}
                             {(actions.length > 0 || whatsappAction) && (
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</TableHead>
                             )}
                         </TableRow>
                     </TableHeader>
@@ -272,14 +279,14 @@ export function AdminTable<T extends Record<string, any>>({
                             <TableRow>
                                 <TableCell
                                     colSpan={columns.length + (actions.length > 0 || whatsappAction ? 1 : 0)}
-                                    className="h-32 text-center text-gray-500"
+                                    className="h-32 text-center text-gray-400"
                                 >
                                     {emptyMessage}
                                 </TableCell>
                             </TableRow>
                         ) : (
                             data.map((row, idx) => (
-                                <TableRow key={((row as Record<string, unknown>)[idKey] as string) || idx} className="hover:bg-warm-50/30">
+                                <TableRow key={((row as Record<string, unknown>)[idKey] as string) || idx} className="hover:bg-gray-50/50 transition-colors border-b border-gray-50">
                                     {columns.map((col) => (
                                         <TableCell key={col.key} className={col.className}>
                                             {col.render
@@ -295,7 +302,7 @@ export function AdminTable<T extends Record<string, any>>({
                                                         href={whatsappAction(row)!}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
                                                         title="WhatsApp"
                                                     >
                                                         <MessageCircle className="h-4 w-4" />
@@ -310,6 +317,7 @@ export function AdminTable<T extends Record<string, any>>({
                                                                 variant={(action.variant as "default") || "ghost"}
                                                                 size="sm"
                                                                 asChild
+                                                                className="rounded-xl"
                                                             >
                                                                 <a href={action.href(row)}>
                                                                     {action.icon}
@@ -324,6 +332,7 @@ export function AdminTable<T extends Record<string, any>>({
                                                             variant={(action.variant as "default") || "ghost"}
                                                             size="sm"
                                                             onClick={() => action.onClick?.(row)}
+                                                            className="rounded-xl"
                                                         >
                                                             {action.icon}
                                                             {action.label}
@@ -343,15 +352,16 @@ export function AdminTable<T extends Record<string, any>>({
             {/* ─── Pagination ─── */}
             {totalPages > 1 && (
                 <div className="flex items-center justify-between">
-                    <p className="text-sm text-gray-600">
-                        Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}
+                    <p className="text-sm text-gray-500">
+                        Showing <span className="font-semibold text-gray-700">{(page - 1) * limit + 1}–{Math.min(page * limit, total)}</span> of <span className="font-semibold text-gray-700">{total}</span>
                     </p>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                         <Button
                             variant="outline"
                             size="sm"
                             disabled={page <= 1}
                             onClick={() => updateParams("page", String(page - 1))}
+                            className="rounded-xl h-9"
                         >
                             <ChevronLeft className="h-4 w-4" />
                         </Button>
@@ -372,7 +382,7 @@ export function AdminTable<T extends Record<string, any>>({
                                     variant={pageNum === page ? "default" : "outline"}
                                     size="sm"
                                     onClick={() => updateParams("page", String(pageNum))}
-                                    className="w-9"
+                                    className={`rounded-xl h-9 w-9 ${pageNum === page ? "bg-gray-900 hover:bg-gray-800" : ""}`}
                                 >
                                     {pageNum}
                                 </Button>
@@ -383,6 +393,7 @@ export function AdminTable<T extends Record<string, any>>({
                             size="sm"
                             disabled={page >= totalPages}
                             onClick={() => updateParams("page", String(page + 1))}
+                            className="rounded-xl h-9"
                         >
                             <ChevronRight className="h-4 w-4" />
                         </Button>
