@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
 import { ConditionalSiteShell } from "@/components/layout/ConditionalSiteShell";
+
+const GA_MEASUREMENT_ID = "G-3E1ZQDF0Z6";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -86,6 +89,18 @@ export default function RootLayout({
     <html lang="en" className={`${poppins.variable} ${inter.variable}`}>
       <body className="antialiased font-sans bg-warm-50 text-warm-900">
         <ConditionalSiteShell>{children}</ConditionalSiteShell>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
       </body>
     </html>
   );
