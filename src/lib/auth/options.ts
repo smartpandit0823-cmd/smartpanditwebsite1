@@ -33,13 +33,18 @@ export const authConfig: NextAuthConfig = {
           );
           if (!isValid) return null;
 
+          if (!admin.role) {
+            console.error(`[Auth] Admin user "${email}" is missing a role. Assign a valid role before logging in.`);
+            return null;
+          }
+
           await AdminUser.findByIdAndUpdate(admin._id, { lastLogin: new Date() });
 
           return {
             id: admin._id.toString(),
             name: admin.name,
             email: admin.email,
-            role: admin.role ?? "admin",
+            role: admin.role,
             image: admin.avatar,
           };
         } catch (error) {

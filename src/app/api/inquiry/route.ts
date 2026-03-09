@@ -4,11 +4,14 @@ import Inquiry from "@/models/Inquiry";
 import { z } from "zod";
 
 const InquirySchema = z.object({
-  name: z.string().min(2, "Name is required"),
-  phone: z.string().min(10, "Valid phone number required"),
-  email: z.string().email().optional().or(z.literal("")),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  phone: z.string().min(10, "Valid 10-digit phone required"),
+  email: z
+    .union([z.string().email(), z.literal("")])
+    .optional()
+    .transform((v) => (v === "" ? undefined : v)),
   service: z.string().min(1, "Please select a service"),
-  message: z.string().min(5, "Message is required"),
+  message: z.string().min(5, "Message must be at least 5 characters"),
   city: z.string().optional(),
 });
 
@@ -18,8 +21,17 @@ export async function POST(req: NextRequest) {
     const parsed = InquirySchema.safeParse(body);
 
     if (!parsed.success) {
+      const flat = parsed.error.flatten();
+      const firstError = flat.fieldErrors
+        ? Object.entries(flat.fieldErrors)
+            .map(([k, v]) => (Array.isArray(v) ? v[0] : v))
+            .find(Boolean)
+        : flat.formErrors?.[0];
       return NextResponse.json(
-        { error: "Invalid input", details: parsed.error.flatten() },
+        {
+          error: firstError || "Invalid input",
+          details: flat,
+        },
         { status: 400 }
       );
     }
