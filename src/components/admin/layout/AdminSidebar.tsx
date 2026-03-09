@@ -19,6 +19,7 @@ import {
   ScrollText,
   Layers,
   Truck,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -55,6 +56,7 @@ const navSections: NavSection[] = [
       { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
       { href: "/admin/customers", label: "Customers", icon: Users },
       { href: "/admin/astrology-requests", label: "Astro Requests", icon: Star },
+      { href: "/admin/inquiries", label: "Enquiries", icon: MessageSquare },
     ],
   },
   {

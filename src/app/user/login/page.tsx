@@ -46,12 +46,23 @@ function LoginContent() {
 
     const setupRecaptcha = useCallback(() => {
         if (recaptchaVerifierRef.current) {
-            recaptchaVerifierRef.current.clear();
+            try { recaptchaVerifierRef.current.clear(); } catch { /* already cleared */ }
             recaptchaVerifierRef.current = null;
         }
 
+        const container = document.getElementById("recaptcha-container");
+        if (container) container.innerHTML = "";
+
         recaptchaVerifierRef.current = new RecaptchaVerifier(authClient, "recaptcha-container", {
             size: "invisible",
+            callback: () => { /* reCAPTCHA solved */ },
+            "expired-callback": () => {
+                setError("reCAPTCHA expired. Please try again.");
+                if (recaptchaVerifierRef.current) {
+                    try { recaptchaVerifierRef.current.clear(); } catch { /* */ }
+                    recaptchaVerifierRef.current = null;
+                }
+            },
         });
 
         return recaptchaVerifierRef.current;
@@ -68,8 +79,9 @@ function LoginContent() {
 
         try {
             const verifier = setupRecaptcha();
-            const phoneNumber = `+91${phone}`;
+            await verifier.render();
 
+            const phoneNumber = `+91${phone}`;
             const result = await signInWithPhoneNumber(authClient, phoneNumber, verifier);
             confirmationResultRef.current = result;
 
@@ -80,19 +92,21 @@ function LoginContent() {
             console.error("Firebase sendOtp error:", err);
 
             if (recaptchaVerifierRef.current) {
-                recaptchaVerifierRef.current.clear();
+                try { recaptchaVerifierRef.current.clear(); } catch { /* */ }
                 recaptchaVerifierRef.current = null;
             }
 
-            const firebaseError = err as { code?: string };
+            const firebaseError = err as { code?: string; message?: string };
             if (firebaseError.code === "auth/too-many-requests") {
                 setError("Too many attempts. Please try again later.");
             } else if (firebaseError.code === "auth/invalid-phone-number") {
                 setError("Invalid phone number. Please check and try again.");
             } else if (firebaseError.code === "auth/captcha-check-failed") {
-                setError("reCAPTCHA verification failed. Please refresh and try again.");
+                setError("reCAPTCHA failed. Please refresh the page and try again.");
+            } else if (firebaseError.code === "auth/network-request-failed") {
+                setError("Network error. Check your connection and try again.");
             } else {
-                setError("Failed to send OTP. Please try again.");
+                setError(firebaseError.message || "Failed to send OTP. Please try again.");
             }
         } finally {
             setLoading(false);

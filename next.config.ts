@@ -2,7 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    unoptimized: true,
     dangerouslyAllowSVG: true,
     remotePatterns: [
       { protocol: "https", hostname: "*.amazonaws.com" },
@@ -21,9 +20,20 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "10mb",
     },
+    optimizePackageImports: [
+      "lucide-react",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-dropdown-menu",
+      "@radix-ui/react-popover",
+      "@radix-ui/react-select",
+      "@radix-ui/react-tabs",
+      "@radix-ui/react-tooltip",
+      "recharts",
+      "date-fns",
+    ],
   },
+  compress: true,
+  poweredByHeader: false,
 };
 
 export default nextConfig;
-
-

@@ -25,7 +25,7 @@ export function Footer() {
               <a href="https://youtube.com/@sanatansetu" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-full bg-orange-100 text-[#FF8C00] hover:bg-[#FF8C00] hover:text-white transition-colors">
                 <Youtube size={20} />
               </a>
-              <a href="https://wa.me/91XXXXXXXXXX" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-full bg-orange-100 text-[#FF8C00] hover:bg-[#FF8C00] hover:text-white transition-colors">
+              <a href="https://wa.me/919022462127" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-full bg-orange-100 text-[#FF8C00] hover:bg-[#FF8C00] hover:text-white transition-colors">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" /><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" /></svg>
               </a>
             </div>

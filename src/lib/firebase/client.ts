@@ -15,5 +15,9 @@ const firebaseConfig = {
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const authClient = getAuth(app);
 
+if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+    authClient.settings.appVerificationDisabledForTesting = true;
+}
+
 export { RecaptchaVerifier, signInWithPhoneNumber };
 export type { ConfirmationResult };
