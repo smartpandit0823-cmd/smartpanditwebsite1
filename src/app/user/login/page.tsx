@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,12 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Smartphone, Loader2, Mail, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import {
+    authClient,
+    RecaptchaVerifier,
+    signInWithPhoneNumber,
+} from "@/lib/firebase/client";
+import type { ConfirmationResult } from "@/lib/firebase/client";
 
 type Step = "phone" | "otp" | "name";
 
@@ -23,22 +29,35 @@ function LoginContent() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [countdown, setCountdown] = useState(0);
-    const [devOtp, setDevOtp] = useState(""); // <--- Storing OTP for UI display
     const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-    // Countdown timer
+    const confirmationResultRef = useRef<ConfirmationResult | null>(null);
+    const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
+
     useEffect(() => {
         if (countdown <= 0) return;
         const t = setTimeout(() => setCountdown(countdown - 1), 1000);
         return () => clearTimeout(t);
     }, [countdown]);
 
-    // Auto-focus first OTP box
     useEffect(() => {
         if (step === "otp") otpRefs.current[0]?.focus();
     }, [step]);
 
-    // ── Send OTP ──
+    const setupRecaptcha = useCallback(() => {
+        if (recaptchaVerifierRef.current) {
+            recaptchaVerifierRef.current.clear();
+            recaptchaVerifierRef.current = null;
+        }
+
+        recaptchaVerifierRef.current = new RecaptchaVerifier(authClient, "recaptcha-container", {
+            size: "invisible",
+        });
+
+        return recaptchaVerifierRef.current;
+    }, []);
+
+    // ── Send OTP via Firebase ──
     const sendOtp = async () => {
         if (phone.length < 10) {
             setError("Enter a valid 10-digit phone number");
@@ -46,32 +65,35 @@ function LoginContent() {
         }
         setError("");
         setLoading(true);
-        setDevOtp(""); // Reset
 
         try {
-            const res = await fetch("/api/auth/send-otp", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ phone: `91${phone}` }),
-            });
-            const data = await res.json();
+            const verifier = setupRecaptcha();
+            const phoneNumber = `+91${phone}`;
 
-            if (!res.ok) {
-                setError(data.error || "Failed to send OTP. Try again.");
-                setLoading(false);
-                return;
-            }
-
-            // In dev environment, API returns the OTP
-            if (data.devOtp) {
-                setDevOtp(data.devOtp);
-            }
+            const result = await signInWithPhoneNumber(authClient, phoneNumber, verifier);
+            confirmationResultRef.current = result;
 
             setOtp(["", "", "", "", "", ""]);
             setCountdown(60);
             setStep("otp");
-        } catch {
-            setError("Network error. Please try again.");
+        } catch (err: unknown) {
+            console.error("Firebase sendOtp error:", err);
+
+            if (recaptchaVerifierRef.current) {
+                recaptchaVerifierRef.current.clear();
+                recaptchaVerifierRef.current = null;
+            }
+
+            const firebaseError = err as { code?: string };
+            if (firebaseError.code === "auth/too-many-requests") {
+                setError("Too many attempts. Please try again later.");
+            } else if (firebaseError.code === "auth/invalid-phone-number") {
+                setError("Invalid phone number. Please check and try again.");
+            } else if (firebaseError.code === "auth/captcha-check-failed") {
+                setError("reCAPTCHA verification failed. Please refresh and try again.");
+            } else {
+                setError("Failed to send OTP. Please try again.");
+            }
         } finally {
             setLoading(false);
         }
@@ -99,31 +121,36 @@ function LoginContent() {
         }
     }
 
-    // ── Verify OTP ──
+    // ── Verify OTP via Firebase + send token to backend ──
     async function verifyOtp(otpCode?: string) {
         const code = otpCode || otp.join("");
         if (code.length !== 6) {
             setError("Enter the 6-digit OTP");
             return;
         }
+
+        if (!confirmationResultRef.current) {
+            setError("Session expired. Please resend OTP.");
+            setStep("phone");
+            return;
+        }
+
         setError("");
         setLoading(true);
 
         try {
-            const res = await fetch("/api/auth/login", {
+            const userCredential = await confirmationResultRef.current.confirm(code);
+            const idToken = await userCredential.user.getIdToken();
+
+            const res = await fetch("/api/auth/verify-otp", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    phone: `91${phone}`,
-                    otp: code,
-                }),
+                body: JSON.stringify({ token: idToken }),
             });
             const data = await res.json();
 
             if (!res.ok) {
-                setError(data.error || "Invalid OTP. Try again.");
-                setOtp(["", "", "", "", "", ""]);
-                otpRefs.current[0]?.focus();
+                setError(data.error || "Verification failed. Try again.");
                 setLoading(false);
                 return;
             }
@@ -138,8 +165,16 @@ function LoginContent() {
 
             router.push("/");
             router.refresh();
-        } catch {
-            setError("Verification failed. Try again.");
+        } catch (err: unknown) {
+            console.error("Firebase verifyOtp error:", err);
+            const firebaseError = err as { code?: string };
+            if (firebaseError.code === "auth/invalid-verification-code") {
+                setError("Invalid OTP. Please check and try again.");
+            } else if (firebaseError.code === "auth/code-expired") {
+                setError("OTP expired. Please resend.");
+            } else {
+                setError("Verification failed. Try again.");
+            }
             setOtp(["", "", "", "", "", ""]);
             otpRefs.current[0]?.focus();
         } finally {
@@ -148,7 +183,7 @@ function LoginContent() {
     }
 
     // ── Google Login Success ──
-    const handleGoogleSuccess = async (credentialResponse: any) => {
+    const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
         try {
             setError("");
             setLoading(true);
@@ -167,10 +202,9 @@ function LoginContent() {
             }
 
             if (data.requirePhone) {
-                // If new user needs phone number linked
                 setName(data.googleData.name);
                 setEmail(data.googleData.email);
-                setStep("phone"); // Needs phone mapping - for our simpler flow, just show phone step
+                setStep("phone");
                 setError("Please link your phone number to complete signup");
                 setLoading(false);
                 return;
@@ -214,6 +248,7 @@ function LoginContent() {
             setStep("phone");
             setOtp(["", "", "", "", "", ""]);
             setError("");
+            confirmationResultRef.current = null;
         } else if (step === "name") {
             router.push("/");
         } else {
@@ -223,6 +258,9 @@ function LoginContent() {
 
     return (
         <div className="flex min-h-dvh flex-col bg-gradient-to-b from-[#fffdf7] to-orange-50/30">
+            {/* Invisible reCAPTCHA container */}
+            <div id="recaptcha-container" />
+
             {/* Top bar */}
             <div className="flex items-center gap-3 px-4 py-4">
                 <button
@@ -294,7 +332,6 @@ function LoginContent() {
                         </div>
 
                         <div className="w-full flex justify-center">
-                            {/* Google Sign In Button */}
                             <GoogleLogin
                                 onSuccess={handleGoogleSuccess}
                                 onError={() => setError("Google Login Failed")}
@@ -323,16 +360,6 @@ function LoginContent() {
                                 Sent to <span className="font-medium text-gray-700">+91 {phone}</span>
                             </p>
                         </div>
-
-                        {/* Development OTP Banner */}
-                        {devOtp && (
-                            <div className="mx-auto w-full rounded-lg border border-[#00B894]/30 bg-[#E5FBF9] p-3 text-center transition-all animate-in fade-in slide-in-from-bottom-2">
-                                <p className="text-xs font-semibold text-[#00B894] uppercase tracking-wider mb-1">
-                                    Simulated OTP (Development)
-                                </p>
-                                <p className="text-2xl font-mono font-bold text-[#1A1A1A] tracking-[0.2em]">{devOtp}</p>
-                            </div>
-                        )}
 
                         <div className="flex justify-center gap-2.5">
                             {otp.map((digit, i) => (
