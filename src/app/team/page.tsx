@@ -4,6 +4,8 @@ import connectDB from "@/lib/db/mongodb";
 import Pandit from "@/models/Pandit";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
     title: "Our Team | SmartPandit — Verified Pandits & Astrologers",
     description: "Meet our verified Pandits and Astrologers. Join our team of spiritual guides and serve devotees across India.",

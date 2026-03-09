@@ -3,6 +3,8 @@ import Product from "@/models/Product";
 import { ShopClient } from "./ShopClient";
 import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Store – Browse Sacred Products",
   description:

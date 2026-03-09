@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Smartphone, Loader2, Mail, User as UserIcon } from "lucide-react";
+import { ArrowLeft, Smartphone, Loader2, Mail, User as UserIcon, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import {
@@ -16,6 +16,9 @@ import {
 import type { ConfirmationResult } from "@/lib/firebase/client";
 
 type Step = "phone" | "otp" | "name";
+
+const MAX_OTP_SENDS = 3;
+const COOLDOWNS = [30, 60, 120];
 
 function LoginContent() {
     const router = useRouter();
@@ -29,14 +32,25 @@ function LoginContent() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [countdown, setCountdown] = useState(0);
+    const [sendCount, setSendCount] = useState(0);
     const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
     const confirmationResultRef = useRef<ConfirmationResult | null>(null);
     const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
+    const recaptchaContainerIdRef = useRef(0);
+    const isMountedRef = useRef(true);
+
+    useEffect(() => {
+        isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = false;
+            destroyRecaptcha();
+        };
+    }, []);
 
     useEffect(() => {
         if (countdown <= 0) return;
-        const t = setTimeout(() => setCountdown(countdown - 1), 1000);
+        const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
         return () => clearTimeout(t);
     }, [countdown]);
 
@@ -44,36 +58,57 @@ function LoginContent() {
         if (step === "otp") otpRefs.current[0]?.focus();
     }, [step]);
 
-    const setupRecaptcha = useCallback(() => {
+    function destroyRecaptcha() {
         if (recaptchaVerifierRef.current) {
             try { recaptchaVerifierRef.current.clear(); } catch { /* already cleared */ }
             recaptchaVerifierRef.current = null;
         }
+        const old = document.getElementById("recaptcha-box");
+        if (old) old.innerHTML = "";
+    }
 
-        const container = document.getElementById("recaptcha-container");
-        if (container) container.innerHTML = "";
+    const setupRecaptcha = useCallback((): RecaptchaVerifier => {
+        destroyRecaptcha();
 
-        recaptchaVerifierRef.current = new RecaptchaVerifier(authClient, "recaptcha-container", {
+        const wrapper = document.getElementById("recaptcha-box");
+        if (wrapper) wrapper.innerHTML = "";
+
+        recaptchaContainerIdRef.current += 1;
+        const id = `recaptcha-widget-${recaptchaContainerIdRef.current}`;
+        const div = document.createElement("div");
+        div.id = id;
+        document.getElementById("recaptcha-box")?.appendChild(div);
+
+        const verifier = new RecaptchaVerifier(authClient, id, {
             size: "invisible",
-            callback: () => { /* reCAPTCHA solved */ },
+            callback: () => { /* solved */ },
             "expired-callback": () => {
+                if (!isMountedRef.current) return;
                 setError("reCAPTCHA expired. Please try again.");
-                if (recaptchaVerifierRef.current) {
-                    try { recaptchaVerifierRef.current.clear(); } catch { /* */ }
-                    recaptchaVerifierRef.current = null;
-                }
+                destroyRecaptcha();
             },
         });
 
-        return recaptchaVerifierRef.current;
+        recaptchaVerifierRef.current = verifier;
+        return verifier;
     }, []);
 
-    // ── Send OTP via Firebase ──
     const sendOtp = async () => {
         if (phone.length < 10) {
             setError("Enter a valid 10-digit phone number");
             return;
         }
+
+        if (sendCount >= MAX_OTP_SENDS) {
+            setError("Maximum OTP attempts reached. Please try again after some time.");
+            return;
+        }
+
+        if (countdown > 0) {
+            setError(`Please wait ${countdown}s before requesting again`);
+            return;
+        }
+
         setError("");
         setLoading(true);
 
@@ -85,35 +120,34 @@ function LoginContent() {
             const result = await signInWithPhoneNumber(authClient, phoneNumber, verifier);
             confirmationResultRef.current = result;
 
+            const newSendCount = sendCount + 1;
+            setSendCount(newSendCount);
+
             setOtp(["", "", "", "", "", ""]);
-            setCountdown(60);
+            const cooldown = COOLDOWNS[Math.min(newSendCount - 1, COOLDOWNS.length - 1)];
+            setCountdown(cooldown);
             setStep("otp");
         } catch (err: unknown) {
             console.error("Firebase sendOtp error:", err);
-
-            if (recaptchaVerifierRef.current) {
-                try { recaptchaVerifierRef.current.clear(); } catch { /* */ }
-                recaptchaVerifierRef.current = null;
-            }
+            destroyRecaptcha();
 
             const firebaseError = err as { code?: string; message?: string };
             if (firebaseError.code === "auth/too-many-requests") {
-                setError("Too many attempts. Please try again later.");
+                setError("Too many attempts. Please try again after 15 minutes.");
             } else if (firebaseError.code === "auth/invalid-phone-number") {
                 setError("Invalid phone number. Please check and try again.");
             } else if (firebaseError.code === "auth/captcha-check-failed") {
-                setError("reCAPTCHA failed. Please refresh the page and try again.");
+                setError("Verification failed. Please refresh the page and try again.");
             } else if (firebaseError.code === "auth/network-request-failed") {
                 setError("Network error. Check your connection and try again.");
             } else {
                 setError(firebaseError.message || "Failed to send OTP. Please try again.");
             }
         } finally {
-            setLoading(false);
+            if (isMountedRef.current) setLoading(false);
         }
     };
 
-    // ── OTP Input Handlers ──
     function handleOtpChange(index: number, value: string) {
         if (!/^\d*$/.test(value)) return;
         const newOtp = [...otp];
@@ -135,7 +169,25 @@ function LoginContent() {
         }
     }
 
-    // ── Verify OTP via Firebase + send token to backend ──
+    function handleOtpPaste(e: React.ClipboardEvent) {
+        e.preventDefault();
+        const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+        if (pasted.length === 0) return;
+
+        const newOtp = [...otp];
+        for (let i = 0; i < 6; i++) {
+            newOtp[i] = pasted[i] || "";
+        }
+        setOtp(newOtp);
+
+        const focusIdx = Math.min(pasted.length, 5);
+        otpRefs.current[focusIdx]?.focus();
+
+        if (pasted.length === 6) {
+            verifyOtp(pasted);
+        }
+    }
+
     async function verifyOtp(otpCode?: string) {
         const code = otpCode || otp.join("");
         if (code.length !== 6) {
@@ -169,6 +221,7 @@ function LoginContent() {
                 return;
             }
 
+            destroyRecaptcha();
             await refresh();
 
             if (!data.user?.name) {
@@ -192,11 +245,10 @@ function LoginContent() {
             setOtp(["", "", "", "", "", ""]);
             otpRefs.current[0]?.focus();
         } finally {
-            setLoading(false);
+            if (isMountedRef.current) setLoading(false);
         }
     }
 
-    // ── Google Login Success ──
     const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
         try {
             setError("");
@@ -233,7 +285,6 @@ function LoginContent() {
         }
     };
 
-    // ── Save Profile (New User) ──
     async function saveProfile() {
         if (!name.trim()) {
             setError("Please enter your name");
@@ -243,11 +294,18 @@ function LoginContent() {
         setLoading(true);
 
         try {
-            await fetch("/api/user/profile", {
+            const res = await fetch("/api/user/profile", {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name: name.trim(), email: email.trim() || undefined }),
             });
+
+            if (!res.ok) {
+                setError("Failed to save profile. Try again.");
+                setLoading(false);
+                return;
+            }
+
             await refresh();
             router.push("/");
             router.refresh();
@@ -270,12 +328,12 @@ function LoginContent() {
         }
     };
 
+    const remainingSends = MAX_OTP_SENDS - sendCount;
+
     return (
         <div className="flex min-h-dvh flex-col bg-gradient-to-b from-[#fffdf7] to-orange-50/30">
-            {/* Invisible reCAPTCHA container */}
-            <div id="recaptcha-container" />
+            <div id="recaptcha-box" className="hidden" />
 
-            {/* Top bar */}
             <div className="flex items-center gap-3 px-4 py-4">
                 <button
                     onClick={goBack}
@@ -319,7 +377,7 @@ function LoginContent() {
                                     setPhone(e.target.value.replace(/\D/g, ""));
                                     if (error) setError("");
                                 }}
-                                onKeyDown={(e) => e.key === "Enter" && sendOtp()}
+                                onKeyDown={(e) => e.key === "Enter" && phone.length === 10 && sendOtp()}
                                 placeholder="Enter 10-digit number"
                                 className="h-14 rounded-xl pl-20 text-lg tracking-wider bg-white"
                                 autoFocus
@@ -330,11 +388,17 @@ function LoginContent() {
 
                         <Button
                             onClick={sendOtp}
-                            disabled={loading || phone.length !== 10}
+                            disabled={loading || phone.length !== 10 || sendCount >= MAX_OTP_SENDS}
                             className="h-13 w-full rounded-xl bg-gradient-to-r from-[#FF8C00] to-[#E67E00] text-base font-semibold shadow-lg shadow-orange-200/50"
                         >
                             {loading ? <Loader2 className="animate-spin" size={20} /> : "Continue"}
                         </Button>
+
+                        {sendCount > 0 && sendCount < MAX_OTP_SENDS && (
+                            <p className="text-center text-xs text-gray-400">
+                                {remainingSends} OTP request{remainingSends !== 1 ? "s" : ""} remaining
+                            </p>
+                        )}
 
                         <div className="relative my-6 flex items-center justify-center">
                             <div className="absolute inset-0 flex items-center">
@@ -371,7 +435,7 @@ function LoginContent() {
                         <div className="text-center">
                             <h2 className="text-lg font-semibold text-gray-900">Verify OTP</h2>
                             <p className="mt-1 text-sm text-gray-500">
-                                Sent to <span className="font-medium text-gray-700">+91 {phone}</span>
+                                Sent to <span className="font-medium text-gray-700">+91 {phone.slice(0, 5)} {phone.slice(5)}</span>
                             </p>
                         </div>
 
@@ -389,7 +453,9 @@ function LoginContent() {
                                         handleOtpChange(i, e.target.value);
                                     }}
                                     onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                                    onPaste={i === 0 ? handleOtpPaste : undefined}
                                     className="size-12 rounded-xl border-2 border-gray-200 bg-white text-center text-xl font-bold text-gray-900 shadow-sm transition-all focus:border-[#FF8C00] focus:outline-none focus:ring-2 focus:ring-orange-200"
+                                    disabled={loading}
                                 />
                             ))}
                         </div>
@@ -404,10 +470,12 @@ function LoginContent() {
                             {loading ? <Loader2 className="animate-spin" size={20} /> : "Verify & Login"}
                         </Button>
 
-                        <div className="text-center">
+                        <div className="text-center space-y-2">
                             {countdown > 0 ? (
-                                <p className="text-sm font-medium text-gray-400 bg-gray-50 inline-block px-3 py-1 rounded-full">Resend in {countdown}s</p>
-                            ) : (
+                                <p className="text-sm font-medium text-gray-400 bg-gray-50 inline-block px-3 py-1 rounded-full">
+                                    Resend in {countdown}s
+                                </p>
+                            ) : sendCount < MAX_OTP_SENDS ? (
                                 <button
                                     onClick={sendOtp}
                                     disabled={loading}
@@ -415,7 +483,22 @@ function LoginContent() {
                                 >
                                     Resend OTP
                                 </button>
+                            ) : (
+                                <p className="text-sm text-red-500 font-medium bg-red-50 inline-block px-3 py-1 rounded-full">
+                                    Max resends reached
+                                </p>
                             )}
+
+                            {sendCount > 0 && sendCount < MAX_OTP_SENDS && (
+                                <p className="text-xs text-gray-400">
+                                    {remainingSends} resend{remainingSends !== 1 ? "s" : ""} left
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 pt-2">
+                            <ShieldCheck size={12} />
+                            <span>OTP is verified securely via Firebase</span>
                         </div>
                     </div>
                 )}

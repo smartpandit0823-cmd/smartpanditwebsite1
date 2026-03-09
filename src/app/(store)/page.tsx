@@ -6,6 +6,8 @@ import Blog from "@/models/Blog";
 import Review from "@/models/Review";
 import { StoreHomeClient } from "./StoreHomeClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "SanatanSetu Store – Sacred Spiritual Products",
   description:

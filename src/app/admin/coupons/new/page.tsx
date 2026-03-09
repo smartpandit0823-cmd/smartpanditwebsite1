@@ -232,7 +232,7 @@ function CreateCouponPageContent() {
                         <div className="space-y-6">
 
                             {/* Validity Settings */}
-                            <Card className="bg-linear-to-br from-gray-50 to-white">
+                            <Card className="bg-gradient-to-br from-gray-50 to-white">
                                 <CardHeader>
                                     <CardTitle>Validity</CardTitle>
                                 </CardHeader>

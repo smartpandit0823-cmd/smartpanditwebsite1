@@ -1,17 +1,9 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-
-if (!MONGODB_URI) {
-  throw new Error("Please define MONGODB_URI in .env.local");
-}
-
-interface MongooseCache {
+let cached = (global as any).mongoose as {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
-}
-
-let cached = (global as any).mongoose;
+};
 
 if (!cached) {
   cached = (global as any).mongoose = { conn: null, promise: null };
@@ -24,12 +16,20 @@ const MONGO_OPTS = {
 };
 
 export async function connectDB() {
+  const mongoUri = process.env.MONGODB_URI;
+
+  if (!mongoUri) {
+    throw new Error(
+      "Please define MONGODB_URI in your environment (.env.local locally or Vercel Project Settings -> Environment Variables in deployment)."
+    );
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, MONGO_OPTS).then((mongoose) => {
+    cached.promise = mongoose.connect(mongoUri, MONGO_OPTS).then((mongoose) => {
       console.log("✅ MongoDB connected natively");
       return mongoose;
     });
