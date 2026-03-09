@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import type { QueryFilter } from "mongoose";
 import connectDB from "@/lib/db/mongodb";
 import Review, { IReview, ReviewStatus } from "@/models/Review";
 import { BaseRepository, PaginatedResult, PaginationOptions } from "./base.repository";
@@ -15,7 +15,7 @@ export class ReviewRepository extends BaseRepository<IReview> {
 
   async list(filter: ReviewListFilter, pagination: PaginationOptions): Promise<PaginatedResult<IReview>> {
     await connectDB();
-    const q: FilterQuery<IReview> = {};
+    const q: QueryFilter<IReview> = {};
     if (filter.status) q.status = filter.status;
     if (filter.targetModel) q.targetModel = filter.targetModel as IReview["targetModel"];
     return this.find(q, { sort: { createdAt: -1 } }, pagination) as Promise<PaginatedResult<IReview>>;

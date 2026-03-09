@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import type { QueryFilter } from "mongoose";
 import connectDB from "@/lib/db/mongodb";
 import Transaction, { ITransaction, TransactionStatus, TransactionType } from "@/models/Transaction";
 import { BaseRepository, PaginatedResult, PaginationOptions } from "./base.repository";
@@ -21,7 +21,7 @@ export class TransactionRepository extends BaseRepository<ITransaction> {
     pagination: PaginationOptions
   ): Promise<PaginatedResult<ITransaction>> {
     await connectDB();
-    const q: FilterQuery<ITransaction> = {};
+    const q: QueryFilter<ITransaction> = {};
     if (filter.status) q.status = filter.status;
     if (filter.type) q.type = filter.type;
     if (filter.dateFrom || filter.dateTo) {

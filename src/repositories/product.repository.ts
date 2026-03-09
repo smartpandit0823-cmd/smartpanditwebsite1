@@ -1,7 +1,9 @@
-import { FilterQuery } from "mongoose";
+import type { QueryFilter } from "mongoose";
 import connectDB from "@/lib/db/mongodb";
-import Product, { IProduct, ProductStatus } from "@/models/Product";
+import Product, { IProduct } from "@/models/Product";
 import { BaseRepository, PaginatedResult, PaginationOptions } from "./base.repository";
+
+type ProductStatus = IProduct["status"];
 
 export interface ProductListFilter {
   search?: string;
@@ -20,7 +22,7 @@ export class ProductRepository extends BaseRepository<IProduct> {
     pagination: PaginationOptions
   ): Promise<PaginatedResult<IProduct>> {
     await connectDB();
-    const q: FilterQuery<IProduct> = {};
+    const q: QueryFilter<IProduct> = {};
 
     if (filter.status) q.status = filter.status;
     if (filter.category) q.category = filter.category;

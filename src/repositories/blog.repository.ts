@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import type { QueryFilter } from "mongoose";
 import connectDB from "@/lib/db/mongodb";
 import Blog, { IBlog, BlogStatus } from "@/models/Blog";
 import { BaseRepository, PaginatedResult, PaginationOptions } from "./base.repository";
@@ -16,7 +16,7 @@ export class BlogRepository extends BaseRepository<IBlog> {
 
   async list(filter: BlogListFilter, pagination: PaginationOptions): Promise<PaginatedResult<IBlog>> {
     await connectDB();
-    const q: FilterQuery<IBlog> = {};
+    const q: QueryFilter<IBlog> = {};
     if (filter.status) q.status = filter.status;
     if (filter.category) q.category = filter.category;
     if (filter.search) {

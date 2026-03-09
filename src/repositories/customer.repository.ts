@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import type { QueryFilter } from "mongoose";
 import connectDB from "@/lib/db/mongodb";
 import Customer, { ICustomer, CustomerStatus } from "@/models/Customer";
 import { BaseRepository, PaginatedResult, PaginationOptions } from "./base.repository";
@@ -18,7 +18,7 @@ export class CustomerRepository extends BaseRepository<ICustomer> {
     pagination: PaginationOptions
   ): Promise<PaginatedResult<ICustomer>> {
     await connectDB();
-    const q: FilterQuery<ICustomer> = {};
+    const q: QueryFilter<ICustomer> = {};
     if (filter.status) q.status = filter.status;
     if (filter.search) {
       q.$or = [

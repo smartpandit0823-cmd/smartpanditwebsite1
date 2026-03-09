@@ -47,7 +47,17 @@ export async function GET(
       return NextResponse.json({ error: "Request not found" }, { status: 404 });
     }
 
-    const astrologer = req.assignedAstrologerId as { name: string; phone: string } | null;
+    const astrologerValue = req.assignedAstrologerId;
+    const astrologer =
+      astrologerValue &&
+      typeof astrologerValue === "object" &&
+      "name" in astrologerValue &&
+      "phone" in astrologerValue
+        ? {
+            name: String(astrologerValue.name),
+            phone: String(astrologerValue.phone),
+          }
+        : null;
 
     return NextResponse.json({
       id: req._id.toString(),
@@ -62,8 +72,8 @@ export async function GET(
       paymentStatus: req.paymentStatus,
       amount: req.amount,
       finalCallTime: req.finalCallTime,
-      assignedAstrologer: astrologer ? { name: astrologer.name, phone: astrologer.phone } : null,
-      statusMessage: getStatusMessage(req.status, req.finalCallTime, astrologer),
+      assignedAstrologer: astrologer,
+      statusMessage: getStatusMessage(req.status, req.finalCallTime, astrologer ?? undefined),
     });
   } catch (e) {
     console.error(e);

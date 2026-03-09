@@ -25,8 +25,13 @@ export async function GET(
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }
 
-    const puja = booking.pujaId as { name: string; slug: string; images: string[]; category: string } | null;
-    const pandit = booking.assignedPanditId as { name: string; phone: string } | null;
+    const puja = booking.pujaId as unknown as {
+      name: string;
+      slug: string;
+      images: string[];
+      category: string;
+    } | null;
+    const pandit = booking.assignedPanditId as unknown as { name: string; phone: string } | null;
 
     return NextResponse.json({
       id: booking._id.toString(),

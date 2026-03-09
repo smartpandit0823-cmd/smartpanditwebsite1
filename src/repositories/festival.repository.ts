@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import type { QueryFilter } from "mongoose";
 import connectDB from "@/lib/db/mongodb";
 import FestivalCalendar, { IFestivalCalendar } from "@/models/FestivalCalendar";
 import { BaseRepository, PaginatedResult, PaginationOptions } from "./base.repository";
@@ -19,7 +19,7 @@ export class FestivalRepository extends BaseRepository<IFestivalCalendar> {
     pagination: PaginationOptions
   ): Promise<PaginatedResult<IFestivalCalendar>> {
     await connectDB();
-    const q: FilterQuery<IFestivalCalendar> = {};
+    const q: QueryFilter<IFestivalCalendar> = {};
     if (filter.type) q.type = filter.type as IFestivalCalendar["type"];
     if (filter.dateFrom || filter.dateTo) {
       q.date = {};

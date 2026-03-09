@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
             ...parsed.data,
             status: "requested",
             priority: "normal",
-            sessionType: 30, // Default fallback
+            sessionType: 30 as const, // Default fallback
             paymentStatus: "pending",
         };
 

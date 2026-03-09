@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import type { QueryFilter } from "mongoose";
 import connectDB from "@/lib/db/mongodb";
 import PujaRequest, { IPujaRequest, PujaRequestStatus } from "@/models/PujaRequest";
 import { BaseRepository, PaginatedResult, PaginationOptions } from "./base.repository";
@@ -21,7 +21,7 @@ export class PujaRequestRepository extends BaseRepository<IPujaRequest> {
     pagination: PaginationOptions
   ): Promise<PaginatedResult<IPujaRequest>> {
     await connectDB();
-    const q: FilterQuery<IPujaRequest> = {};
+    const q: QueryFilter<IPujaRequest> = {};
 
     if (filter.status) q.status = filter.status;
     if (filter.pujaId) q.pujaId = filter.pujaId as unknown as IPujaRequest["pujaId"];

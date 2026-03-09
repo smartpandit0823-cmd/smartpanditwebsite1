@@ -1,6 +1,7 @@
 import connectDB from "@/lib/db/mongodb";
 import Product from "@/models/Product";
 import { ShopClient } from "./ShopClient";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "Store – Browse Sacred Products",
@@ -41,5 +42,9 @@ async function getProducts() {
 
 export default async function StorePage() {
   const products = await getProducts();
-  return <ShopClient products={products} />;
+  return (
+    <Suspense fallback={<div className="min-h-dvh bg-[#F9F9F9]" />}>
+      <ShopClient products={products} />
+    </Suspense>
+  );
 }

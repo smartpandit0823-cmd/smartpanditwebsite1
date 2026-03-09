@@ -39,7 +39,7 @@ export const authConfig: NextAuthConfig = {
             id: admin._id.toString(),
             name: admin.name,
             email: admin.email,
-            role: admin.role,
+            role: admin.role ?? "admin",
             image: admin.avatar,
           };
         } catch (error) {
@@ -53,7 +53,7 @@ export const authConfig: NextAuthConfig = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as { role?: string }).role;
+        token.role = (user as { role?: string }).role ?? token.role;
       }
       return token;
     },

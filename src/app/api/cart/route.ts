@@ -20,7 +20,14 @@ export async function GET() {
       .lean();
 
     const items = (cart?.items || []).map((item: { productId: unknown; quantity: number; price: number }) => {
-      const p = item.productId as { _id: string; name: string; mainImage: string; pricing: { sellingPrice: number }; inventory?: { inStock: boolean; codAvailable?: boolean }, codAvailable?: boolean } | null;
+      const p = item.productId as unknown as {
+        _id: string;
+        name: string;
+        mainImage: string;
+        pricing: { sellingPrice: number };
+        inventory?: { inStock: boolean; codAvailable?: boolean };
+        codAvailable?: boolean;
+      } | null;
       return {
         productId: p?._id,
         name: p?.name,

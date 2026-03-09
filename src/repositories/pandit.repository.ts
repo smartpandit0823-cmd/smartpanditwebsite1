@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import type { QueryFilter } from "mongoose";
 import connectDB from "@/lib/db/mongodb";
 import Pandit, { IPandit, PanditStatus } from "@/models/Pandit";
 import { BaseRepository, PaginatedResult, PaginationOptions } from "./base.repository";
@@ -19,7 +19,7 @@ export class PanditRepository extends BaseRepository<IPandit> {
     pagination: PaginationOptions
   ): Promise<PaginatedResult<IPandit>> {
     await connectDB();
-    const q: FilterQuery<IPandit> = {};
+    const q: QueryFilter<IPandit> = {};
     if (filter.status) q.status = filter.status;
     if (filter.verificationStatus) q.verificationStatus = filter.verificationStatus as IPandit["verificationStatus"];
     if (filter.search) {

@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       data: bookings.map((b) => {
-        const puja = b.pujaId as { name: string; slug: string; images: string[] } | null;
+        const puja = b.pujaId as unknown as { name: string; slug: string; images: string[] } | null;
         return {
           id: b._id.toString(),
           pujaName: puja?.name,

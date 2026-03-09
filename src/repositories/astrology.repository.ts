@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import type { QueryFilter } from "mongoose";
 import connectDB from "@/lib/db/mongodb";
 import AstrologyRequest, { IAstrologyRequest, AstrologyStatus } from "@/models/AstrologyRequest";
 import { BaseRepository, PaginatedResult, PaginationOptions } from "./base.repository";
@@ -19,7 +19,7 @@ export class AstrologyRepository extends BaseRepository<IAstrologyRequest> {
     pagination: PaginationOptions
   ): Promise<PaginatedResult<IAstrologyRequest>> {
     await connectDB();
-    const q: FilterQuery<IAstrologyRequest> = {};
+    const q: QueryFilter<IAstrologyRequest> = {};
     if (filter.status) q.status = filter.status;
     if (filter.priority) q.priority = filter.priority as IAstrologyRequest["priority"];
     if (filter.search) {

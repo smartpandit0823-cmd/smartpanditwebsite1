@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, X, Loader2, ArrowLeft } from "lucide-react";
@@ -20,7 +20,7 @@ interface SearchProduct {
     inStock: boolean;
 }
 
-export default function SearchPage() {
+function SearchPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const initialQuery = searchParams.get("q") || "";
@@ -240,5 +240,13 @@ export default function SearchPage() {
 
             </div>
         </div>
+    );
+}
+
+export default function SearchPage() {
+    return (
+        <Suspense fallback={<div className="min-h-dvh bg-white" />}>
+            <SearchPageContent />
+        </Suspense>
     );
 }

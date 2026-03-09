@@ -37,6 +37,20 @@ npm run dev     # http://localhost:3000
 
 - **Puja sections:** Admin me puja add/edit karne ke liye saare sections — see `docs/PUJA_SECTIONS.md`.
 
+## Vercel Deployment
+
+1. Push this repository to GitHub.
+2. Import the repo into Vercel as a Next.js project.
+3. Copy values from `.env.example` into Vercel Project Settings -> Environment Variables.
+4. Set `NEXTAUTH_URL` and `NEXT_PUBLIC_BASE_URL` to your production domain.
+5. Redeploy after adding env vars.
+
+Recommended:
+
+- Use Node.js 20+ on Vercel.
+- Keep MongoDB Atlas, AWS S3, Razorpay, Firebase, and Delhivery credentials in Vercel envs only.
+- Do not commit real `.env.local` or production secrets.
+
 ## Project Structure
 
 ```

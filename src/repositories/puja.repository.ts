@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import type { QueryFilter } from "mongoose";
 import connectDB from "@/lib/db/mongodb";
 import Puja, { IPuja, PujaStatus } from "@/models/Puja";
 import { BaseRepository, PaginatedResult, PaginationOptions } from "./base.repository";
@@ -17,7 +17,7 @@ export class PujaRepository extends BaseRepository<IPuja> {
 
   async list(filter: PujaListFilter, pagination: PaginationOptions): Promise<PaginatedResult<IPuja>> {
     await connectDB();
-    const q: FilterQuery<IPuja> = {};
+    const q: QueryFilter<IPuja> = {};
 
     if (filter.status && filter.status !== ("all" as PujaStatus)) q.status = filter.status;
     if (filter.category) q.category = filter.category;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeft, Save, RefreshCw, Loader2, Tag, Percent, IndianRupee, Truck } from "lucide-react";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
-export default function CreateCouponPage() {
+function CreateCouponPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const editId = searchParams.get("edit");
@@ -232,7 +232,7 @@ export default function CreateCouponPage() {
                         <div className="space-y-6">
 
                             {/* Validity Settings */}
-                            <Card className="bg-gradient-to-br from-gray-50 to-white">
+                            <Card className="bg-linear-to-br from-gray-50 to-white">
                                 <CardHeader>
                                     <CardTitle>Validity</CardTitle>
                                 </CardHeader>
@@ -326,5 +326,13 @@ export default function CreateCouponPage() {
                 </form>
             )}
         </div>
+    );
+}
+
+export default function CreateCouponPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-white" />}>
+            <CreateCouponPageContent />
+        </Suspense>
     );
 }

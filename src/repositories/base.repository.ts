@@ -1,4 +1,5 @@
-import { Document, FilterQuery, Model, QueryOptions, UpdateQuery } from "mongoose";
+import type { QueryFilter } from "mongoose";
+import { Document, Model, QueryOptions, UpdateQuery } from "mongoose";
 
 export interface PaginationOptions {
   page?: number;
@@ -22,16 +23,16 @@ export class BaseRepository<T extends Document> {
     return this.model.findById(id).exec();
   }
 
-  async findOne(filter: FilterQuery<T>): Promise<T | null> {
+  async findOne(filter: QueryFilter<T>): Promise<T | null> {
     return this.model.findOne(filter).exec();
   }
 
   async find(
-    filter: FilterQuery<T> = {},
+    filter: QueryFilter<T> = {},
     options?: QueryOptions,
     pagination?: PaginationOptions
   ): Promise<T[] | PaginatedResult<T>> {
-    let query = this.model.find(filter);
+    let query: any = this.model.find(filter);
 
     if (options?.sort) {
       query = query.sort(options.sort);
@@ -79,7 +80,7 @@ export class BaseRepository<T extends Document> {
     return this.model.findByIdAndDelete(id).exec();
   }
 
-  async count(filter: FilterQuery<T> = {}): Promise<number> {
+  async count(filter: QueryFilter<T> = {}): Promise<number> {
     return this.model.countDocuments(filter).exec();
   }
 }
