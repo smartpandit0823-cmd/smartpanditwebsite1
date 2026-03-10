@@ -3,7 +3,7 @@ import Script from "next/script";
 import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
 import { ConditionalSiteShell } from "@/components/layout/ConditionalSiteShell";
-import { LaunchOverlay } from "@/components/launch/LaunchOverlay";
+
 
 const GA_MEASUREMENT_ID = "G-3E1ZQDF0Z6";
 
@@ -89,7 +89,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable} ${inter.variable}`}>
       <body className="antialiased font-sans bg-warm-50 text-warm-900">
-        <LaunchOverlay />
         <ConditionalSiteShell>{children}</ConditionalSiteShell>
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
