@@ -4,6 +4,7 @@ import connectDB from "@/lib/db/mongodb";
 import Payment from "@/models/Payment";
 import Booking from "@/models/Booking";
 import Order from "@/models/Order";
+import Product from "@/models/Product";
 import AstroRequest from "@/models/AstroRequest";
 import Notification from "@/models/Notification";
 import { verifyPaymentSignature } from "@/lib/razorpay";
@@ -120,11 +121,19 @@ export async function POST(req: NextRequest) {
       }
 
       await Order.findByIdAndUpdate(payment.entityId, {
-        status: "processing", // Auto-move paid orders to processing
+        status: "processing",
         paymentStatus: "paid",
         razorpayPaymentId: razorpay_payment_id,
         ...(delhiveryWaybill && { delhiveryWaybill, delhiveryStatus })
       });
+
+      if (order) {
+        for (const item of order.items) {
+          await Product.findByIdAndUpdate(item.productId, {
+            $inc: { totalSold: item.quantity, "inventory.stock": -item.quantity },
+          });
+        }
+      }
       await Notification.create({
         userId: payment.userId,
         title: "Order Placed",

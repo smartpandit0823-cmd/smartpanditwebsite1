@@ -30,11 +30,10 @@ export async function POST(
             (order as unknown as Record<string, unknown>).trackingId = trackingId;
         }
 
-        // Auto-reduce stock when order moves to processing (only once)
         if (status === "processing" && previousStatus !== "processing") {
             for (const item of order.items) {
                 await Product.findByIdAndUpdate(item.productId, {
-                    $inc: { "inventory.stock": -item.quantity },
+                    $inc: { "inventory.stock": -item.quantity, totalSold: item.quantity },
                 });
             }
         }
