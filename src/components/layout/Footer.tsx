@@ -10,10 +10,7 @@ export function Footer() {
           {/* Section 1: Brand */}
           <div className="flex flex-col gap-6">
             <Link href="/" className="inline-block">
-              <span className="flex items-center gap-1.5 font-heading text-2xl font-bold text-[#FF8C00]">
-                <span className="drop-shadow-sm">🙏</span>
-                <span>SanatanSetu</span>
-              </span>
+              <img src="/logo.png" alt="SanatanSetu" className="h-10 w-auto" />
             </Link>
             <p className="text-[#888888] text-[15px] font-medium leading-relaxed max-w-xs">
               India&apos;s most trusted spiritual destination. Premium spiritual tools, energized by experts and delivered pan India.

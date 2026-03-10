@@ -2,66 +2,68 @@ import { auth } from "@/auth";
 import connectDB from "@/lib/db/mongodb";
 import Order from "@/models/Order";
 import { OrdersTable } from "./OrdersTable";
+import Link from "next/link";
+
+function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 export default async function OrdersPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: string; status?: string; q?: string }>;
 }) {
-  await auth();
-  const params = await searchParams;
-  const page = parseInt(params.page || "1");
-  const limit = 20;
-  await connectDB();
+  try {
+    await auth();
+    const params = await searchParams;
+    const page = Math.max(1, parseInt(params.page || "1") || 1);
+    const limit = 20;
+    await connectDB();
 
-  // ── Build filter ──
-  // Default: show confirmed (paid/processing/shipped/delivered) orders
-  // Only show pending/created if explicitly filtered
-  const filter: Record<string, unknown> = {};
+    // ── Build filter ──
+    const filter: Record<string, unknown> = {};
 
-  if (params.status && params.status !== "all") {
-    filter.status = params.status;
-  } else if (!params.status) {
-    // Default view: exclude bare "created + pending payment" orders (incomplete checkouts)
-    filter.$or = [
-      { paymentStatus: "paid" },
-      { paymentStatus: "refunded" },
-      { status: { $in: ["paid", "processing", "shipped", "delivered", "cancelled"] } },
-    ];
-  }
-  // status === "all" → no status filter (show everything)
-
-  if (params.q) {
-    const searchFilter = [
-      { "shippingAddress.name": { $regex: params.q, $options: "i" } },
-      { "shippingAddress.phone": { $regex: params.q, $options: "i" } },
-    ];
-    if (filter.$or) {
-      // Combine with existing $or using $and
-      filter.$and = [{ $or: filter.$or as unknown[] }, { $or: searchFilter }];
-      delete filter.$or;
-    } else {
-      filter.$or = searchFilter;
+    if (params.status && params.status !== "all") {
+      filter.status = params.status;
+    } else if (!params.status) {
+      filter.$or = [
+        { paymentStatus: "paid" },
+        { paymentStatus: "refunded" },
+        { status: { $in: ["paid", "processing", "shipped", "delivered", "cancelled"] } },
+      ];
     }
-  }
 
-  // ── Count pending (created + pending payment) orders for the badge ──
-  const [data, total, pendingCount] = await Promise.all([
-    Order.find(filter)
-      .select("items totalAmount status paymentStatus shippingAddress trackingId razorpayPaymentId delhiveryWaybill createdAt userId")
-      .populate("userId", "phone name")
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean(),
-    Order.countDocuments(filter),
-    Order.countDocuments({ status: "created", paymentStatus: "pending" }),
-  ]);
+    const searchQ = params.q?.trim();
+    if (searchQ) {
+      const escaped = escapeRegex(searchQ);
+      const searchFilter = [
+        { "shippingAddress.name": { $regex: escaped, $options: "i" } },
+        { "shippingAddress.phone": { $regex: escaped, $options: "i" } },
+      ];
+      if (filter.$or) {
+        filter.$and = [{ $or: filter.$or as unknown[] }, { $or: searchFilter }];
+        delete filter.$or;
+      } else {
+        filter.$or = searchFilter;
+      }
+    }
 
-  const serialized = JSON.parse(JSON.stringify(data));
-  const currentStatus = params.status || "";
+    const [data, total, pendingCount] = await Promise.all([
+      Order.find(filter)
+        .select("items totalAmount status paymentStatus shippingAddress trackingId razorpayPaymentId delhiveryWaybill createdAt userId")
+        .populate({ path: "userId", select: "phone name", strictPopulate: false })
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+      Order.countDocuments(filter),
+      Order.countDocuments({ status: "created", paymentStatus: "pending" }),
+    ]);
 
-  return (
+    const serialized = JSON.parse(JSON.stringify(data ?? []));
+    const currentStatus = params.status || "";
+
+    return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -87,4 +89,23 @@ export default async function OrdersPage({
       <OrdersTable data={serialized} total={total} page={page} />
     </div>
   );
+  } catch (err) {
+    console.error("[Admin Orders] Server error:", err);
+    return (
+      <div className="space-y-6">
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
+          <h2 className="text-lg font-semibold text-red-800">Unable to load orders</h2>
+          <p className="mt-2 text-sm text-red-600">
+            A temporary error occurred. Please try again in a moment.
+          </p>
+          <Link
+            href="/admin/orders"
+            className="mt-4 inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+          >
+            Retry
+          </Link>
+        </div>
+      </div>
+    );
+  }
 }

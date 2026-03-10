@@ -42,20 +42,33 @@ export const metadata: Metadata = {
   authors: [{ name: "SanatanSetu" }],
   creator: "SanatanSetu",
   metadataBase: new URL("https://sanatansetu.shop"),
+  icons: {
+    icon: "/favicon.png",
+    apple: "/logo.png",
+  },
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://sanatansetu.com",
+    url: "https://sanatansetu.shop",
     siteName: "SanatanSetu",
     title: "SanatanSetu – Premium Spiritual Store",
     description:
       "India's premium spiritual store — authentic products curated by verified pandits & expert astrologers.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "SanatanSetu – Premium Spiritual Store",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "SanatanSetu – Premium Spiritual Store",
     description:
       "Shop Rudraksha, Puja Kits, Gemstones & more. Pandit verified. Starting ₹199.",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,

@@ -43,14 +43,25 @@ export async function POST(req: NextRequest) {
             totalH += h * item.quantity;
         }
 
+        // Normalize phone to 10 digits (strip +91, spaces)
+        const rawPhone = String(order.shippingAddress?.phone || "").trim();
+        const customerPhone = rawPhone.replace(/^\+91\s*/, "").replace(/\D/g, "").slice(-10) || rawPhone;
+
+        // Build full shipping address (address + city + state + pincode)
+        const addr = order.shippingAddress.address?.trim() || "";
+        const city = order.shippingAddress.city?.trim() || "";
+        const state = order.shippingAddress.state?.trim() || "";
+        const pincode = String(order.shippingAddress.pincode || "").trim();
+        const fullAddress = [addr, city, state, pincode].filter(Boolean).join(", ");
+
         const shipmentInput: DelhiveryShipmentInput = {
             orderId: order._id.toString(),
-            customerName: order.shippingAddress.name,
-            customerPhone: order.shippingAddress.phone,
-            customerAddress: order.shippingAddress.address,
-            customerCity: order.shippingAddress.city,
-            customerState: order.shippingAddress.state,
-            customerPincode: order.shippingAddress.pincode,
+            customerName: order.shippingAddress.name?.trim() || "Customer",
+            customerPhone: customerPhone || "0000000000",
+            customerAddress: fullAddress || addr,
+            customerCity: city,
+            customerState: state,
+            customerPincode: pincode,
             paymentMode: order.paymentStatus === "paid" ? "Prepaid" : "COD",
             codAmount: order.paymentStatus === "paid" ? 0 : order.totalAmount,
             totalAmount: order.totalAmount,
@@ -61,7 +72,11 @@ export async function POST(req: NextRequest) {
             height: Math.max(totalH, 5),
             quantity: order.items.reduce((sum: number, i: any) => sum + i.quantity, 0),
             sellerName: "SanatanSetu",
-            sellerAddress: "Ganesh Nagar, Near Mahaviar Shala, Lasalgaon, Maharashtra 423401",
+            sellerAddress: "Ganesh Nagar, Near Mahavir Shala, Lasalgaon, Maharashtra 422306",
+            sellerPhone: process.env.SELLER_PHONE || "",
+            sellerCity: "Lasalgaon",
+            sellerState: "Maharashtra",
+            sellerPincode: "422306",
             sellerGstTin: "", // If you have GST later, add it here for tax invoices
         };
 

@@ -221,17 +221,27 @@ export interface DelhiveryShipmentInput {
     height?: number; // cm
     sellerName?: string;
     sellerAddress?: string;
+    sellerPhone?: string;
+    sellerCity?: string;
+    sellerState?: string;
+    sellerPincode?: string;
     sellerGstTin?: string;
 }
 
 export async function createShipment(input: DelhiveryShipmentInput) {
     try {
+        const defaultReturnAddr = "Ganesh Nagar, Near Mahavir Shala, Lasalgaon, Maharashtra 422306";
+        const returnAddr = input.sellerAddress || defaultReturnAddr;
+        const returnPin = input.sellerPincode || "422306";
+        const returnCity = input.sellerCity || "Lasalgaon";
+        const returnState = input.sellerState || "Maharashtra";
+
         const shipmentData = {
             shipments: [
                 {
                     name: input.customerName,
                     add: input.customerAddress,
-                    pin: input.customerPincode,
+                    pin: String(input.customerPincode).trim(),
                     city: input.customerCity,
                     state: input.customerState,
                     country: "India",
@@ -248,13 +258,13 @@ export async function createShipment(input: DelhiveryShipmentInput) {
                     shipment_breadth: input.breadth || 10,
                     shipment_height: input.height || 10,
                     seller_name: input.sellerName || "SanatanSetu",
-                    seller_add: input.sellerAddress || "Ganesh Nagar, Near Mahaviar Shala, Lasalgaon, Maharashtra 423401",
+                    seller_add: returnAddr,
                     seller_inv: "",
                     seller_cst: input.sellerGstTin || "",
-                    return_add: input.sellerAddress || "Ganesh Nagar, Near Mahaviar Shala, Lasalgaon, Maharashtra 423401",
-                    return_pin: "423401",
-                    return_city: "Lasalgaon",
-                    return_state: "Maharashtra",
+                    return_add: returnAddr,
+                    return_pin: returnPin,
+                    return_city: returnCity,
+                    return_state: returnState,
                     return_country: "India",
                 },
             ],

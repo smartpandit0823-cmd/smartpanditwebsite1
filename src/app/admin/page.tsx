@@ -19,11 +19,13 @@ import Link from "next/link";
 import { DashboardClient } from "./DashboardClient";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { unstable_noStore } from "next/cache";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function AdminDashboardPage() {
+  unstable_noStore();
   const session = await auth();
   if (!session?.user) redirect("/admin/login");
 
@@ -41,12 +43,12 @@ export default async function AdminDashboardPage() {
 
   // Serialize stats for client component
   const dashboardData = {
-    // Stat cards
     totalRevenue: stats.storeRevenue + stats.pujaRevenue + stats.astrologyRevenue,
     storeRevenue: stats.storeRevenue,
     pujaRevenue: stats.pujaRevenue,
     astrologyRevenue: stats.astrologyRevenue,
-    totalOrders: stats.advanceBookings || 0,
+    revenueChangePercent: stats.revenueChangePercent,
+    totalOrders: stats.totalRealOrders || 0,
     totalRealOrders: stats.totalRealOrders || 0,
     totalCustomers: stats.totalCustomers || 0,
     pendingAstroRequests: stats.pendingAstroRequests || 0,

@@ -4,6 +4,7 @@ import Order from "@/models/Order";
 import { notFound } from "next/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils/index";
 import { OrderStatusForm } from "./OrderStatusForm";
+import { ShippingLabel } from "./ShippingLabel";
 import { StatusBadge } from "@/components/admin/AdminTable";
 import Link from "next/link";
 import { trackShipment } from "@/lib/shipping/delhivery";
@@ -237,6 +238,24 @@ export default async function OrderDetailPage({
                     <span className="text-base font-semibold text-gray-700">Order Total</span>
                     <span className="text-xl font-bold text-gray-900">{formatCurrency(o.totalAmount)}</span>
                 </div>
+            </div>
+
+            {/* Shipping Label */}
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                <h2 className="text-base font-semibold text-gray-900 mb-4">Custom Shipping Label</h2>
+                <p className="text-sm text-gray-500 mb-4">Print a 4×6 inch courier label with all order details, customer address, product info, and seller/return address.</p>
+                <ShippingLabel
+                    order={{
+                        orderId: o._id,
+                        waybill: o.delhiveryWaybill || o.trackingId || "",
+                        paymentStatus: o.paymentStatus,
+                        shippingAddress: o.shippingAddress,
+                        items: o.items,
+                        totalAmount: o.totalAmount,
+                        shippingFee: o.shippingFee || 0,
+                        createdAt: o.createdAt,
+                    }}
+                />
             </div>
 
             {/* Update Status */}

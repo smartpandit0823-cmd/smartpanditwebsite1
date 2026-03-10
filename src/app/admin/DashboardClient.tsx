@@ -7,6 +7,7 @@ import {
     Package,
     AlertTriangle,
     ArrowUpRight,
+    ArrowDownRight,
     TrendingUp,
     Plus,
     Image,
@@ -24,6 +25,7 @@ interface DashboardData {
     storeRevenue: number;
     pujaRevenue: number;
     astrologyRevenue: number;
+    revenueChangePercent?: number;
     totalOrders: number;
     totalRealOrders: number;
     totalCustomers: number;
@@ -54,7 +56,7 @@ export function DashboardClient({ data }: { data: DashboardData }) {
             title: "Total Revenue",
             value: formatCurrency(data.totalRevenue),
             icon: IndianRupee,
-            change: "+12.5%",
+            change: data.revenueChangePercent != null ? `${data.revenueChangePercent >= 0 ? "+" : ""}${data.revenueChangePercent}%` : "",
             color: "from-emerald-500 to-teal-600",
             bg: "bg-emerald-50",
             textColor: "text-emerald-600",
@@ -107,6 +109,16 @@ export function DashboardClient({ data }: { data: DashboardData }) {
                 <p className="text-sm text-gray-500 mt-1">Welcome back! Here&apos;s your store overview.</p>
             </div>
 
+            {/* Revenue breakdown */}
+            <div className="flex flex-wrap gap-3 text-sm">
+                <span className="text-gray-500">Revenue breakdown:</span>
+                <span><strong>Store (Products):</strong> {formatCurrency(data.storeRevenue)}</span>
+                <span className="text-gray-400">|</span>
+                <span><strong>Puja:</strong> {formatCurrency(data.pujaRevenue)}</span>
+                <span className="text-gray-400">|</span>
+                <span><strong>Astro:</strong> {formatCurrency(data.astrologyRevenue)}</span>
+            </div>
+
             {/* Stat Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {statCards.map((stat) => {
@@ -120,8 +132,9 @@ export function DashboardClient({ data }: { data: DashboardData }) {
                                             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{stat.title}</p>
                                             <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
                                             {stat.change && (
-                                                <p className="text-xs font-semibold text-emerald-600 mt-1 flex items-center gap-0.5">
-                                                    <ArrowUpRight size={12} /> {stat.change}
+                                                <p className={`text-xs font-semibold mt-1 flex items-center gap-0.5 ${stat.change.startsWith("+") ? "text-emerald-600" : "text-red-600"}`}>
+                                                    {stat.change.startsWith("+") ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+                                                    {stat.change}
                                                 </p>
                                             )}
                                         </div>

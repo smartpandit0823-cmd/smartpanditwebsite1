@@ -92,12 +92,10 @@ export function AdminSidebar() {
       {/* Logo */}
       <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/[0.06] px-4">
         <Link href="/admin" className="flex items-center gap-2.5 overflow-hidden">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-saffron-500 to-amber-600 text-white text-lg font-bold shadow-lg shadow-saffron-500/20">
-            ॐ
-          </span>
+          <img src="/logo.png" alt="SanatanSetu" className="h-9 w-auto shrink-0 object-contain" />
           {!collapsed && (
             <span className="font-heading text-[15px] font-bold text-white whitespace-nowrap">
-              SmartPandit
+              SanatanSetu
             </span>
           )}
         </Link>

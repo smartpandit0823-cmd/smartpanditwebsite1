@@ -7,7 +7,6 @@ import Product from "@/models/Product";
 import Review from "@/models/Review";
 import User from "@/models/User";
 import AnalyticsEvent from "@/models/AnalyticsEvent";
-import Customer from "@/models/Customer";
 
 // ──────── Dashboard Stats (Enhanced) ────────
 
@@ -21,6 +20,7 @@ export interface DashboardStats {
   pujaRevenue: number;
   storeRevenue: number;
   astrologyRevenue: number;
+  revenueChangePercent?: number;
   todayBookings: number;
   pendingAssignments: number;
   totalAdvanceCollected: number;
@@ -73,10 +73,10 @@ export async function getDashboardStats(period: "7d" | "30d" = "7d"): Promise<Da
   ] = await Promise.all([
     // Total users
     User.countDocuments(),
-    // Total customers (registered store customers)
-    Customer.countDocuments().catch(() => 0),
-    // Total real orders from Order model
-    Order.countDocuments().catch(() => 0),
+    // Total customers (registered users, same as admin customers page)
+    User.countDocuments({ status: { $ne: "deleted" } }).catch(() => 0),
+    // Total PAID orders only (real revenue-generating orders)
+    Order.countDocuments({ paymentStatus: "paid" }).catch(() => 0),
     // Pending astrology requests
     AstrologyRequest.countDocuments({ status: "requested" }).catch(() => 0),
     // Total bookings
@@ -113,12 +113,30 @@ export async function getDashboardStats(period: "7d" | "30d" = "7d"): Promise<Da
       { $unwind: { path: "$puja", preserveNullAndEmptyArrays: true } },
       { $project: { _id: { $toString: "$_id" }, name: { $ifNull: ["$puja.name", "Unknown"] }, count: 1, revenue: 1 } },
     ]),
-    // Top products
-    Product.find({ status: { $ne: "deleted" } })
-      .sort({ totalSold: -1 })
-      .limit(5)
-      .select("name totalSold pricing.sellingPrice")
-      .lean(),
+    // Top products (from actual paid Order items - real sold count & revenue)
+    Order.aggregate([
+      { $match: { paymentStatus: "paid" } },
+      { $unwind: "$items" },
+      {
+        $group: {
+          _id: "$items.productId",
+          sold: { $sum: "$items.quantity" },
+          revenue: { $sum: { $multiply: ["$items.price", "$items.quantity"] } },
+        },
+      },
+      { $sort: { sold: -1 } },
+      { $limit: 5 },
+      { $lookup: { from: "products", localField: "_id", foreignField: "_id", as: "product" } },
+      { $unwind: { path: "$product", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: { $toString: "$_id" },
+          name: { $ifNull: ["$product.name", "Unknown"] },
+          sold: 1,
+          revenue: 1,
+        },
+      },
+    ]),
     // Pandit performance
     Pandit.find({ status: "active" })
       .sort({ totalPujasCompleted: -1 })
@@ -229,6 +247,28 @@ export async function getDashboardStats(period: "7d" | "30d" = "7d"): Promise<Da
   const totalPendingCollection = (advanceStats[0]?.totalAmount || 0) - totalAdvanceCollected;
   const advanceBookings = advanceStats[0]?.count || 0;
 
+  const totalRevenue = pujaRevenue + storeRevenue + astrologyRevenue;
+
+  const prevStartDate = new Date(startDate);
+  prevStartDate.setDate(prevStartDate.getDate() - days);
+  const [prevPuja, prevStore, prevAstro] = await Promise.all([
+    Booking.aggregate([
+      { $match: { status: { $nin: ["cancelled"] }, amountPaid: { $gt: 0 }, createdAt: { $gte: prevStartDate, $lt: startDate } } },
+      { $group: { _id: null, total: { $sum: { $subtract: ["$amountPaid", { $ifNull: ["$panditPayoutAmount", 0] }] } } } },
+    ]).then((r) => r[0]?.total ?? 0),
+    Order.aggregate([
+      { $match: { paymentStatus: "paid", createdAt: { $gte: prevStartDate, $lt: startDate } } },
+      { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+    ]).then((r) => r[0]?.total ?? 0),
+    AstrologyRequest.aggregate([
+      { $match: { paymentStatus: "paid", createdAt: { $gte: prevStartDate, $lt: startDate } } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]).then((r) => r[0]?.total ?? 0),
+  ]);
+  const prevRevenue = prevPuja + prevStore + prevAstro;
+  const revenueChangePercent =
+    prevRevenue > 0 ? Math.round(((totalRevenue - prevRevenue) / prevRevenue) * 1000) / 10 : undefined;
+
   return {
     totalUsers,
     totalCustomers,
@@ -239,6 +279,7 @@ export async function getDashboardStats(period: "7d" | "30d" = "7d"): Promise<Da
     pujaRevenue,
     storeRevenue,
     astrologyRevenue,
+    revenueChangePercent,
     todayBookings,
     pendingAssignments,
     totalAdvanceCollected,
@@ -251,11 +292,11 @@ export async function getDashboardStats(period: "7d" | "30d" = "7d"): Promise<Da
       count: p.count,
       revenue: p.revenue,
     })),
-    topProducts: (topProductsRaw as { _id: unknown; name: string; totalSold: number; pricing: { sellingPrice: number } }[]).map((p) => ({
+    topProducts: (topProductsRaw as { _id: string; name: string; sold: number; revenue: number }[]).map((p) => ({
       _id: String(p._id),
       name: p.name,
-      sold: p.totalSold,
-      revenue: p.totalSold * (p.pricing?.sellingPrice ?? 0),
+      sold: p.sold ?? 0,
+      revenue: p.revenue ?? 0,
     })),
     conversionSummary: {
       visitors: totalVisitors,

@@ -131,11 +131,12 @@ export function Header() {
             </button>
 
             {/* Center/Left: Logo */}
-            <Link href="/" className="lg:mr-8">
-              <span className="flex items-center gap-1.5 font-heading text-xl lg:text-2xl font-bold text-[#FF8C00]">
-                <span className="drop-shadow-sm">🙏</span>
-                <span>SanatanSetu</span>
-              </span>
+            <Link href="/" className="lg:mr-8 flex items-center">
+              <img
+                src="/logo.png"
+                alt="SanatanSetu – Premium Spiritual Store"
+                className="h-10 w-auto lg:h-11 object-contain"
+              />
             </Link>
 
             {/* Desktop Nav Links */}

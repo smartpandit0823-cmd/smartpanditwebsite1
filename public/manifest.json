@@ -1,7 +1,7 @@
 {
-    "name": "SmartPandit – Book Verified Pandits",
-    "short_name": "SmartPandit",
-    "description": "Book verified pandits for puja, astrology & temple services. India's most trusted spiritual platform.",
+    "name": "SanatanSetu – Premium Spiritual Store",
+    "short_name": "SanatanSetu",
+    "description": "India's premium spiritual store — Rudraksha, Puja Kits, Gemstones, Temple Prasad & more. Pandit verified.",
     "start_url": "/",
     "display": "standalone",
     "orientation": "portrait",

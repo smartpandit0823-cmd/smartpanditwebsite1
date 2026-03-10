@@ -37,8 +37,15 @@ export async function connectDB() {
 
   try {
     cached.conn = await cached.promise;
+    // Verify connection is alive (serverless connections can go stale)
+    if (cached.conn.connection.readyState !== 1) {
+      cached.conn = null;
+      cached.promise = null;
+      return connectDB();
+    }
   } catch (e) {
     cached.promise = null;
+    cached.conn = null;
     throw e;
   }
 

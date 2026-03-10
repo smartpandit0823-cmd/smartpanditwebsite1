@@ -57,13 +57,10 @@ function LoginPageContent() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-amber-500/10 blur-[120px]" />
 
         <div className="relative z-10 text-center px-12 max-w-lg">
-          {/* Om Symbol */}
-          <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-saffron-500 to-amber-600 text-5xl font-bold text-white shadow-2xl shadow-saffron-500/30 animate-breathe">
-            ॐ
-          </div>
+          <img src="/logo.png" alt="SanatanSetu" className="mx-auto mb-8 h-20 w-auto drop-shadow-2xl" />
 
           <h1 className="text-4xl font-bold text-white mb-4" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
-            SmartPandit
+            SanatanSetu
           </h1>
           <p className="text-lg text-gray-400 mb-3">
             Enterprise Admin Portal
@@ -94,10 +91,8 @@ function LoginPageContent() {
         <div className="w-full max-w-[400px]">
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-saffron-500 to-amber-600 text-3xl font-bold text-white shadow-lg">
-              ॐ
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">SmartPandit</h1>
+            <img src="/logo.png" alt="SanatanSetu" className="mx-auto h-14 w-auto mb-4" />
+            <h1 className="text-2xl font-bold text-gray-900">SanatanSetu</h1>
           </div>
 
           <div className="mb-8">
