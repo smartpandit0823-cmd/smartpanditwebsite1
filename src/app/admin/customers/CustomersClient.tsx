@@ -109,6 +109,7 @@ export function CustomersClient({ customers, total }: { customers: Customer[]; t
                                     <th className="px-4 py-3 font-semibold text-gray-600 text-center">Orders</th>
                                     <th className="px-4 py-3 font-semibold text-gray-600 text-right">Total Spent</th>
                                     <th className="px-4 py-3 font-semibold text-gray-600">Status</th>
+                                    <th className="px-4 py-3 font-semibold text-gray-600">Last Order</th>
                                     <th className="px-4 py-3 font-semibold text-gray-600">Joined</th>
                                 </tr>
                             </thead>
@@ -152,6 +153,9 @@ export function CustomersClient({ customers, total }: { customers: Customer[]; t
                                                 {c.status === "active" ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
                                                 {c.status}
                                             </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-gray-500 text-xs">
+                                            {c.lastOrderAt ? format(new Date(c.lastOrderAt), "dd MMM yyyy") : "—"}
                                         </td>
                                         <td className="px-4 py-3 text-gray-500 text-xs">
                                             {format(new Date(c.createdAt), "dd MMM yyyy")}
